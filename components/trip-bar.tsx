@@ -21,11 +21,11 @@ export function TripBar() {
       >
         <div>
           <p className="text-xs text-white/65">
-            Tu viaje · {count} {count === 1 ? 'elección' : 'elecciones'}
+            Tu reserva · {count} {count === 1 ? 'item' : 'items'}
           </p>
           <p className="mt-0.5 text-sm font-semibold">S/{total} total</p>
         </div>
-        <span className="rounded-full bg-amber px-3 py-2 text-sm font-bold text-forest">Reservar ya</span>
+        <span className="rounded-full bg-amber px-3 py-2 text-sm font-bold text-forest">Ver reserva</span>
       </Link>
     </div>
   );
