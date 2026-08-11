@@ -1,4 +1,78 @@
-import Image from 'next/image'; import Link from 'next/link'; import type { Experience, Hotel } from '@/lib/types'; import { AddExperience } from './experience-actions';
-const Cover=({url,name}:{url?:string;name:string})=><div className="relative h-52 overflow-hidden bg-gradient-to-br from-forest via-forest/80 to-amber/80" role="img" aria-label={name}>{url&&<Image src={url} alt={name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover"/>}<div className="absolute inset-0 bg-gradient-to-t from-forest/35 to-transparent"/></div>;
-export function HotelCard({hotel}:{hotel:Hotel}) { return <article className="catalog-card"><Cover url={hotel.photos?.[0]} name={hotel.name}/><div className="p-5"><p className="text-sm text-forest/60">{hotel.location}</p><h3 className="mt-1 font-display text-2xl leading-tight text-forest">{hotel.name}</h3><p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{hotel.description}</p><div className="mt-4 flex min-h-7 flex-wrap gap-1.5">{hotel.amenities.slice(0,3).map(a=><span key={a} className="rounded-full bg-cream px-2.5 py-1 text-xs text-forest/75">{a}</span>)}</div><div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4"><div><b className="text-lg text-forest">S/{hotel.price_per_night}</b><small className="ml-1 text-forest/55">/ noche</small></div><Link className="button" href={`/hoteles/${hotel.id}`}>Reservar hotel</Link></div></div></article> }
-export function ExperienceCard({experience}:{experience:Experience}) { return <article className="catalog-card"><Cover url={experience.photos?.[0]} name={experience.name}/><div className="p-5">{experience.is_featured&&<span className="mb-2 inline-block rounded-full bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-forest">Recomendado por Zarpa</span>}<p className="text-xs font-bold uppercase tracking-[.13em] text-amber">{experience.category} <span className="text-forest/35">·</span> {experience.duration}</p><h3 className="mt-2 font-display text-2xl leading-tight text-forest">{experience.name}</h3><p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{experience.description}</p><p className="mt-3 truncate text-xs text-forest/55">Salida: {experience.meeting_point}</p><div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4"><b className="text-lg text-forest">S/{experience.price}</b><AddExperience experience={experience}/></div></div></article> }
+import Image from 'next/image';
+import Link from 'next/link';
+import type { Experience, Hotel } from '@/lib/types';
+import { AddExperience } from './experience-actions';
+
+function Cover({ url, name }: { url?: string; name: string }) {
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden bg-forest/10">
+      {url ? (
+        <Image
+          src={url}
+          alt={name}
+          fill
+          priority={false}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover object-[center_38%] transition duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest/85 to-amber/70" aria-hidden />
+      )}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-forest/10 to-transparent" />
+    </div>
+  );
+}
+
+export function HotelCard({ hotel }: { hotel: Hotel }) {
+  return (
+    <article className="catalog-card group">
+      <Cover url={hotel.photos?.[0]} name={hotel.name} />
+      <div className="p-5">
+        <p className="text-sm text-forest/60">{hotel.location}</p>
+        <h3 className="mt-1 font-display text-2xl leading-tight text-forest">{hotel.name}</h3>
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{hotel.description}</p>
+        <div className="mt-4 flex min-h-7 flex-wrap gap-1.5">
+          {hotel.amenities.slice(0, 3).map((a) => (
+            <span key={a} className="rounded-full bg-cream px-2.5 py-1 text-xs text-forest/75">
+              {a}
+            </span>
+          ))}
+        </div>
+        <div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4">
+          <div>
+            <b className="text-lg text-forest">S/{hotel.price_per_night}</b>
+            <small className="ml-1 text-forest/55">/ noche</small>
+          </div>
+          <Link className="button" href={`/hoteles/${hotel.id}`}>
+            Reservar hotel
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export function ExperienceCard({ experience }: { experience: Experience }) {
+  return (
+    <article className="catalog-card group">
+      <Cover url={experience.photos?.[0]} name={experience.name} />
+      <div className="p-5">
+        {experience.is_featured && (
+          <span className="mb-2 inline-block rounded-full bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-forest">
+            Recomendado por Zarpa
+          </span>
+        )}
+        <p className="text-xs font-bold uppercase tracking-[.13em] text-amber">
+          {experience.category} <span className="text-forest/35">·</span> {experience.duration}
+        </p>
+        <h3 className="mt-2 font-display text-2xl leading-tight text-forest">{experience.name}</h3>
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{experience.description}</p>
+        <p className="mt-3 truncate text-xs text-forest/55">Salida: {experience.meeting_point}</p>
+        <div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4">
+          <b className="text-lg text-forest">S/{experience.price}</b>
+          <AddExperience experience={experience} />
+        </div>
+      </div>
+    </article>
+  );
+}
