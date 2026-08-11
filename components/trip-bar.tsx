@@ -20,7 +20,7 @@ export function TripBar() {
           </p>
           <p className="mt-0.5 text-sm font-semibold">S/{total} total</p>
         </div>
-        <span className="rounded-full bg-amber px-3 py-2 text-sm font-bold text-forest">Reservar</span>
+        <span className="rounded-full bg-amber px-3 py-2 text-sm font-bold text-forest">Reservar ya</span>
       </Link>
     </div>
   );
