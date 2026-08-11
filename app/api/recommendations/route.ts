@@ -13,7 +13,7 @@ export async function GET(request:NextRequest){
   const [experiences,hotels]=await Promise.all([getExperiences(),getHotels()]);
   const recommendations=experiences.filter(x=>!selectedIds.includes(x.id)).map(x=>{
     let score=0; let reason='Una buena primera experiencia para conocer Tingo María.';
-    if(!selectedCategories.length){if(['Naturaleza','Cataratas'].includes(x.category)){score+=35;reason='Una puerta de entrada ideal a la naturaleza de Tingo María.'} if(x.name.includes('De Repente'))score+=20;}
+    if(!selectedCategories.length){if(['Naturaleza','Cataratas'].includes(x.category)){score+=35;reason='Una puerta de entrada ideal a la naturaleza de Tingo María.'} if(x.name.toLowerCase().includes('derrepente'))score+=20;}
     else if(selectedCategories.includes(x.category)){score+=12;reason=`Complementa tu plan de ${x.category.toLowerCase()} sin cambiar de ritmo.`}
     else if(selectedCategories.some(category=>complementary[category]?.includes(x.category))){score+=28;reason=`Combina muy bien con lo que ya elegiste y hace tu día más completo.`}
     else {score+=5;reason='Añade una perspectiva distinta a tu itinerario.'}
