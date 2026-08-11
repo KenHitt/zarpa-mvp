@@ -1,12 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { usePackage } from './package-provider';
 
+const HIDDEN_ON = ['/mi-paquete', '/checkout', '/reserva-confirmada'];
+
 export function TripBar() {
+  const pathname = usePathname();
   const { hotel, experiences, total } = usePackage();
   const count = experiences.length + (hotel ? 1 : 0);
-  if (!count) return null;
+
+  if (!count || HIDDEN_ON.includes(pathname)) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-4 z-30 px-4">
