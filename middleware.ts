@@ -3,6 +3,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
+function isProtectedAdmin(path: string) {
+  if (path === '/admin/login') return false;
+  return path.startsWith('/admin');
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -27,11 +32,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await db.auth.getUser();
 
-  if (request.nextUrl.pathname.startsWith('/partner/dashboard') && !user) {
+  const path = request.nextUrl.pathname;
+
+  if (path.startsWith('/partner/dashboard') && !user) {
     return NextResponse.redirect(new URL('/partner/login', request.url));
+  }
+
+  if (isProtectedAdmin(path) && !user) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
   return response;
 }
 
-export const config = { matcher: ['/partner/:path*'] };
+export const config = { matcher: ['/partner/:path*', '/admin', '/admin/:path*'] };

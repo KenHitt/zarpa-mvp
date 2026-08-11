@@ -1,3 +1,21 @@
-import './globals.css'; import { PackageProvider } from '@/components/package-provider'; import { Header } from '@/components/header'; import { TripBar } from '@/components/trip-bar'; import { AnalyticsPageView } from '@/components/analytics-page-view'; import Link from 'next/link';
-export const metadata={title:'Zarpa | Aventuras en Tingo María',description:'Arma tu viaje a Tingo María'};
-export default function Layout({children}:{children:React.ReactNode}){return <html lang="es"><head><link rel="preconnect" href="https://images.unsplash.com"/><link rel="dns-prefetch" href="https://images.unsplash.com"/></head><body><PackageProvider><AnalyticsPageView/><Header/><main>{children}</main><footer className="mt-16 border-t border-forest/10 px-4 py-8 pb-24 text-center text-sm text-forest/70">Zarpa · Tingo María, Huánuco <span className="mx-2">·</span><Link href="/partner/login">Acceso operadores</Link></footer><TripBar/></PackageProvider></body></html>}
+import './globals.css';
+import { LayoutChrome } from '@/components/layout-chrome';
+
+export const metadata = {
+  title: 'Zarpa | Aventuras en Tingo María',
+  description: 'Arma tu viaje a Tingo María',
+};
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es">
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
+      <body>
+        <LayoutChrome>{children}</LayoutChrome>
+      </body>
+    </html>
+  );
+}

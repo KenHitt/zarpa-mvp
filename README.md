@@ -9,6 +9,20 @@ Marketplace de reservas de naturaleza para Tingo María, hecho con Next.js 14 y 
 3. En **Authentication > Providers**, habilita Email. Crea los usuarios de operadores desde **Authentication > Users**.
 4. Vincula cada usuario creando una fila en `operators` con su UUID de Auth, tipo y el `linked_hotel_id` o `linked_experience_id` correspondiente. La restricción SQL impide enlaces ambiguos.
 5. El bucket privado `payment-proofs` se crea en la migración. Los comprobantes se sirven con URL firmada únicamente dentro del panel autorizado.
+6. Ejecuta también `supabase/migrations/202608100005_catalog_storage.sql` y `202608100007_admin_dashboard.sql` para fotos del catálogo y panel admin.
+
+### Panel admin (catálogo)
+
+1. Crea un usuario en **Authentication > Users** (correo + contraseña).
+2. En **SQL Editor**, vincúlalo como admin (reemplaza el UUID):
+
+```sql
+insert into public.admins (auth_user_id, email)
+values ('UUID-DEL-USUARIO-AUTH', 'tu@correo.com');
+```
+
+3. Entra en `/admin/login` → gestiona hoteles, experiencias y sube fotos al bucket `catalog`.
+4. Usa estado **Activo** para publicar en la web; **Borrador** mantiene oculto el producto.
 
 ## 2. Ejecutar localmente
 
