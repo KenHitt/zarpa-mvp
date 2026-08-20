@@ -34,6 +34,22 @@ npm run dev
 
 Completa en `.env.local` las tres claves de Supabase. Nunca publiques `SUPABASE_SERVICE_ROLE_KEY`: solo la consume el Route Handler del servidor. Opcionalmente define los números de Yape y Plin para el checkout.
 
+### Notificaciones al reservar
+
+Al crear una reserva, Zarpa envía:
+
+- **Al turista:** correo de confirmación (“recibimos tu reserva”).
+- **Al operador:** alerta con datos del cliente y enlace al panel partner.
+
+Configura en `.env.local` / Vercel:
+
+- `RESEND_API_KEY` — API key de [Resend](https://resend.com)
+- `EMAIL_FROM` — remitente verificado (ej. `Zarpa <reservas@tudominio.com>`)
+- `ZARPA_OPS_EMAIL` — correo de respaldo si no hay operador vinculado al hotel/experiencia
+- `NEXT_PUBLIC_SITE_URL` — URL pública (para el enlace al panel partner)
+
+Los operadores reciben el correo en la cuenta de **Authentication** vinculada en la tabla `operators`. Si falta Resend, la reserva se crea igual; solo se omiten los correos.
+
 ## 3. Desplegar en Vercel
 
 1. Sube este repositorio a GitHub y en Vercel selecciona **New Project > Import**.

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getExperiences, getHotels } from '@/lib/data/catalog';
 import { ExperienceCard, HotelCard } from '@/components/catalog';
+import { TrustStrip } from '@/components/trust-strip';
 
 export const revalidate = 60;
 
@@ -19,33 +20,25 @@ export default async function Home() {
           <div>
             <p className="eyebrow">Tingo María, Perú</p>
             <h1 className="mt-5 max-w-xl font-display text-5xl leading-[.96] tracking-tight text-forest sm:text-7xl">
-              Encuentra tu próxima historia.
+              Vive la selva. Reserva en minutos.
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-forest/70">
-              Experiencias de naturaleza seleccionadas y reservas simples, directamente con operadores locales.
+              Cataratas, cuevas y rutas locales con operadores de Tingo María. Sin filas, sin complicaciones — solo
+              eliges, pagas y listo.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/experiencias" className="button">
-                Ver experiencias
+              <Link href="/experiencias" className="button" prefetch>
+                Explorar experiencias
               </Link>
               <Link
                 href="/hoteles"
+                prefetch
                 className="inline-flex min-h-11 items-center rounded-full border border-forest/20 px-5 text-sm font-semibold text-forest transition hover:border-forest"
               >
                 Ver hospedaje
               </Link>
             </div>
-            <p className="mt-4 text-sm text-forest/55">
-              ¿Solo un tour? Reserva experiencias sin hotel.{' '}
-              <Link className="font-semibold text-forest underline underline-offset-2" href="/experiencias">
-                Explorar tours
-              </Link>
-            </p>
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-forest/55">
-              <span>Reserva en minutos</span>
-              <span>Operadores locales</span>
-              <span>Yape, Plin o tarjeta</span>
-            </div>
+            <TrustStrip />
           </div>
 
           {featured && (
@@ -128,8 +121,8 @@ export default async function Home() {
           </Link>
         </div>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {experiences.slice(0, 3).map((e) => (
-            <ExperienceCard key={e.id} experience={e} />
+          {experiences.slice(0, 3).map((e, i) => (
+            <ExperienceCard key={e.id} experience={e} priority={i === 0} />
           ))}
         </div>
         <Link className="button mt-7 w-full sm:hidden" href="/experiencias">

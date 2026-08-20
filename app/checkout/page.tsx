@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { usePackage } from '@/components/package-provider';
 import { BookingSteps } from '@/components/booking-steps';
+import { TrustStrip } from '@/components/trust-strip';
 
 export default function Checkout() {
   const p = usePackage();
@@ -79,6 +80,8 @@ export default function Checkout() {
         ← Volver a tu reserva
       </Link>
 
+      <TrustStrip compact />
+
       <form onSubmit={submit} className="mt-6 space-y-4">
         <label>
           Nombre completo
@@ -111,6 +114,9 @@ export default function Checkout() {
           </div>
         )}
         {error && <p className="text-sm text-red-700">{error}</p>}
+        <p className="text-xs leading-5 text-forest/50">
+          Al confirmar, tu cupo queda registrado. El operador validará tu pago y te contactará pronto.
+        </p>
         <button disabled={sending} className="button w-full bg-amber text-forest hover:bg-amber/90">
           {sending ? 'Registrando…' : 'Confirmar y pagar'}
         </button>

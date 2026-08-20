@@ -109,7 +109,10 @@ export default function MyPackage() {
       </div>
 
       <div className="mt-5 flex items-center justify-between rounded-2xl bg-forest p-5 text-cream">
-        <span>Total</span>
+        <div>
+          <span>Total de tu reserva</span>
+          <p className="text-xs text-cream/70">Precio final antes de pagar</p>
+        </div>
         <b className="text-2xl">S/{p.total}</b>
       </div>
 

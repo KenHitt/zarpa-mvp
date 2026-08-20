@@ -17,6 +17,7 @@ export function TripBar() {
     <div className="fixed inset-x-0 bottom-4 z-30 px-4">
       <Link
         href="/mi-paquete"
+        prefetch
         className="mx-auto flex max-w-md items-center justify-between rounded-2xl bg-forest px-4 py-3 text-white shadow-[0_16px_40px_rgba(17,50,35,.3)] transition hover:bg-[#173c2d]"
       >
         <div>

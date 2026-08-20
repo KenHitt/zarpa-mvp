@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Experience, Hotel } from '@/lib/types';
 import { AddExperience } from './experience-actions';
 
-function Cover({ url, name }: { url?: string; name: string }) {
+function Cover({ url, name, priority = false }: { url?: string; name: string; priority?: boolean }) {
   return (
     <div className="relative aspect-[16/10] overflow-hidden bg-forest/10">
       {url ? (
@@ -11,7 +11,7 @@ function Cover({ url, name }: { url?: string; name: string }) {
           src={url}
           alt={name}
           fill
-          priority={false}
+          priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-[center_38%] transition duration-500 group-hover:scale-[1.03]"
         />
@@ -23,10 +23,10 @@ function Cover({ url, name }: { url?: string; name: string }) {
   );
 }
 
-export function HotelCard({ hotel }: { hotel: Hotel }) {
+export function HotelCard({ hotel, priority = false }: { hotel: Hotel; priority?: boolean }) {
   return (
     <article className="catalog-card group">
-      <Cover url={hotel.photos?.[0]} name={hotel.name} />
+      <Cover url={hotel.photos?.[0]} name={hotel.name} priority={priority} />
       <div className="p-5">
         <p className="text-sm text-forest/60">{hotel.location}</p>
         <h3 className="mt-1 font-display text-2xl leading-tight text-forest">{hotel.name}</h3>
@@ -43,8 +43,8 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
             <b className="text-lg text-forest">S/{hotel.price_per_night}</b>
             <small className="ml-1 text-forest/55">/ noche</small>
           </div>
-          <Link className="button" href={`/hoteles/${hotel.id}`}>
-            Reservar hotel
+          <Link className="button" href={`/hoteles/${hotel.id}`} prefetch>
+            Elegir fechas
           </Link>
         </div>
       </div>
@@ -52,10 +52,10 @@ export function HotelCard({ hotel }: { hotel: Hotel }) {
   );
 }
 
-export function ExperienceCard({ experience }: { experience: Experience }) {
+export function ExperienceCard({ experience, priority = false }: { experience: Experience; priority?: boolean }) {
   return (
     <article className="catalog-card group">
-      <Cover url={experience.photos?.[0]} name={experience.name} />
+      <Cover url={experience.photos?.[0]} name={experience.name} priority={priority} />
       <div className="p-5">
         {experience.is_featured && (
           <span className="mb-2 inline-block rounded-full bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-forest">
@@ -68,6 +68,7 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
         <h3 className="mt-2 font-display text-2xl leading-tight text-forest">{experience.name}</h3>
         <p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{experience.description}</p>
         <p className="mt-3 truncate text-xs text-forest/55">Salida: {experience.meeting_point}</p>
+        <p className="mt-2 text-xs text-forest/45">Reserva en minutos · cupos según disponibilidad</p>
         <div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4">
           <b className="text-lg text-forest">S/{experience.price}</b>
           <AddExperience experience={experience} />
