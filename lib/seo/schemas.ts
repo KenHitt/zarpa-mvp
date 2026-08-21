@@ -1,20 +1,46 @@
-import type { Experience, Hotel } from '@/lib/types';
+import type { Experience, Hotel, Review } from '@/lib/types';
 import { experiencePath, experienceSlug } from '@/lib/slug';
-import { siteName, siteUrl } from './site';
+import { businessInfo, defaultDescription, siteName, siteUrl, socialProfiles } from './site';
 
 export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'TravelAgency',
+    '@id': `${siteUrl()}/#organization`,
     name: siteName,
     url: siteUrl(),
     logo: `${siteUrl()}/brand/logotipo.png`,
-    description: 'Marketplace de turismo y aventuras en Tingo María, Perú.',
+    image: `${siteUrl()}/brand/logotipo.png`,
+    description: defaultDescription,
+    telephone: businessInfo.phone,
+    email: businessInfo.email,
+    priceRange: businessInfo.priceRange,
+    currenciesAccepted: 'PEN',
+    paymentAccepted: 'Yape, Plin, Tarjeta',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: businessInfo.address.locality,
+      addressRegion: businessInfo.address.region,
+      addressCountry: businessInfo.address.country,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: businessInfo.geo.latitude,
+      longitude: businessInfo.geo.longitude,
+    },
     areaServed: {
       '@type': 'City',
       name: 'Tingo María',
       containedInPlace: { '@type': 'AdministrativeArea', name: 'Huánuco, Perú' },
     },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: businessInfo.phone,
+      contactType: 'reservas',
+      areaServed: 'PE',
+      availableLanguage: ['Spanish'],
+    },
+    sameAs: socialProfiles,
   };
 }
 
@@ -46,25 +72,52 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
   };
 }
 
-export function experienceProductSchema(experience: Experience & { slug?: string | null }) {
+export function experienceProductSchema(
+  experience: Experience & { slug?: string | null },
+  reviews: Review[] = []
+) {
   const path = experiencePath(experience);
-  const photo = experience.photos?.[0];
+  const url = `${siteUrl()}${path}`;
+  const photos = (experience.photos ?? []).filter(Boolean);
+  const priceValidUntil = new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10);
+
+  const aggregateRating = reviews.length
+    ? {
+        '@type': 'AggregateRating',
+        ratingValue: (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
+        reviewCount: reviews.length,
+        bestRating: 5,
+        worstRating: 1,
+      }
+    : undefined;
+
+  const review = reviews.slice(0, 15).map((r) => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.author_name },
+    datePublished: r.created_at.slice(0, 10),
+    reviewBody: r.comment,
+    reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+  }));
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: experience.name,
     description: experience.description,
-    image: photo ? [photo] : undefined,
+    image: photos.length ? photos : undefined,
     brand: { '@type': 'Brand', name: siteName },
+    category: experience.category,
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(review.length ? { review } : {}),
     offers: {
       '@type': 'Offer',
       priceCurrency: 'PEN',
       price: Number(experience.price),
+      priceValidUntil,
       availability: 'https://schema.org/InStock',
-      url: `${siteUrl()}${path}`,
+      url,
+      seller: { '@id': `${siteUrl()}/#organization` },
     },
-    category: experience.category,
   };
 }
 
@@ -75,6 +128,13 @@ export function touristTripSchema(experience: Experience & { slug?: string | nul
     name: experience.name,
     description: experience.description,
     touristType: 'AdventureTraveler',
+    provider: { '@id': `${siteUrl()}/#organization` },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'PEN',
+      price: Number(experience.price),
+      availability: 'https://schema.org/InStock',
+    },
     itinerary: {
       '@type': 'ItemList',
       name: experience.name,

@@ -8,9 +8,10 @@ export default async function AdminHome() {
   if (!isAdmin) redirect('/admin/login');
 
   const db = await createClient();
-  const [{ count: hotels }, { count: experiences }] = await Promise.all([
+  const [{ count: hotels }, { count: experiences }, { count: pendingReviews }] = await Promise.all([
     db.from('hotels').select('*', { count: 'exact', head: true }),
     db.from('experiences').select('*', { count: 'exact', head: true }),
+    db.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
   ]);
 
   return (
@@ -27,6 +28,11 @@ export default async function AdminHome() {
           <p className="text-3xl font-bold text-slate-900">{experiences ?? 0}</p>
           <p className="mt-1 font-medium text-slate-700">Experiencias</p>
           <p className="mt-2 text-sm text-slate-500">Tours, precios, destacados</p>
+        </Link>
+        <Link href="/admin/resenas" className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:ring-slate-300">
+          <p className="text-3xl font-bold text-slate-900">{pendingReviews ?? 0}</p>
+          <p className="mt-1 font-medium text-slate-700">Reseñas por revisar</p>
+          <p className="mt-2 text-sm text-slate-500">Aprueba reseñas reales · estrellas en Google</p>
         </Link>
       </div>
       <p className="mt-8 text-sm text-slate-500">

@@ -10,11 +10,13 @@ export async function POST() {
 
   revalidateTag('catalog-experiences');
   revalidateTag('catalog-hotels');
+  revalidateTag('reviews');
 
   for (const path of ['/', '/experiencias', '/hoteles', '/sitemap.xml']) {
     revalidatePath(path);
   }
   revalidatePath('/experiencias', 'layout');
+  revalidatePath('/experiencias/[slug]', 'page');
 
   return NextResponse.json({ ok: true });
 }

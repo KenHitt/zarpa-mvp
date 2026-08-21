@@ -5,7 +5,11 @@ import { AddExperience } from '@/components/experience-actions';
 import { ExperienceGallery } from '@/components/experience-gallery';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { FaqBlock } from '@/components/seo/faq-block';
+import { ReviewList } from '@/components/reviews/review-list';
+import { ReviewForm } from '@/components/reviews/review-form';
+import { ReviewStars } from '@/components/reviews/review-stars';
 import { getExperienceBySlug, getExperiences } from '@/lib/data/catalog';
+import { getExperienceReviews, reviewStats } from '@/lib/data/reviews';
 import { faqsForExperience, SEO_COPY_BY_SLUG } from '@/lib/seo/content';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { pageMetadata } from '@/lib/seo/metadata';
@@ -80,10 +84,11 @@ export default async function ExperienceDetailPage({ params }: Props) {
     redirect(`/experiencias/${slug}`);
   }
 
-  const all = await getExperiences();
+  const [all, reviews] = await Promise.all([getExperiences(), getExperienceReviews(experience.id)]);
   const faqs = faqsForExperience(slug);
   const seo = SEO_COPY_BY_SLUG[slug];
   const path = experiencePath(experience);
+  const stats = reviewStats(reviews);
 
   return (
     <article className="shell max-w-3xl py-10 sm:py-14">
@@ -101,6 +106,14 @@ export default async function ExperienceDetailPage({ params }: Props) {
       <h1 className="mt-3 font-display text-4xl leading-tight text-forest sm:text-5xl">
         {seo?.title ?? experience.name}
       </h1>
+
+      {stats.count > 0 && (
+        <div className="mt-3 flex items-center gap-2 text-sm text-forest/70">
+          <ReviewStars value={stats.average} size="sm" />
+          <span className="font-semibold text-forest">{stats.average.toFixed(1)}</span>
+          <span>· {stats.count} {stats.count === 1 ? 'reseña' : 'reseñas'}</span>
+        </div>
+      )}
 
       {experience.photos?.length ? (
         <ExperienceGallery photos={experience.photos} name={experience.name} priority />
@@ -157,6 +170,12 @@ export default async function ExperienceDetailPage({ params }: Props) {
         </ul>
       </section>
 
+      <section className="mt-12">
+        <h2 className="font-display text-2xl text-forest">Reseñas de viajeros</h2>
+        <ReviewList reviews={reviews} stats={stats} />
+        <ReviewForm experienceId={experience.id} productName={experience.name} />
+      </section>
+
       <FaqBlock faqs={faqs} />
       <RelatedExperiences current={experience} all={all} />
 
@@ -167,7 +186,7 @@ export default async function ExperienceDetailPage({ params }: Props) {
             { name: 'Experiencias', path: '/experiencias' },
             { name: experience.name, path },
           ]),
-          experienceProductSchema(experience),
+          experienceProductSchema(experience, reviews),
           touristTripSchema(experience),
           faqSchema(faqs),
         ]}

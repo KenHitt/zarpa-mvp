@@ -3,16 +3,22 @@ import './globals.css';
 import { LayoutChrome } from '@/components/layout-chrome';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { organizationSchema, websiteSchema } from '@/lib/seo/schemas';
-import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteTagline, siteUrl } from '@/lib/seo/site';
+import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteTabTitle, siteTagline, siteUrl } from '@/lib/seo/site';
+
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: `${siteTagline} · ${siteName}`,
-    template: `%s | ${siteName}`,
+    default: siteTabTitle,
+    template: `Zarpa : %s`,
   },
   description: defaultDescription,
   keywords: defaultKeywords,
+  alternates: {
+    canonical: '/',
+    languages: { 'es-PE': '/', es: '/' },
+  },
   icons: {
     icon: [{ url: '/brand/icono.png', type: 'image/png' }],
     apple: [{ url: '/brand/icono.png', type: 'image/png' }],
@@ -21,16 +27,28 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_PE',
     siteName,
+    title: `${siteTagline} · ${siteName}`,
     description: defaultDescription,
-    images: [{ url: defaultOgImage, alt: siteTagline }],
+    images: [{ url: defaultOgImage, width: 1200, height: 630, alt: `${siteName} · ${siteTagline}` }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: siteTagline,
+    title: `${siteTagline} · ${siteName}`,
     description: defaultDescription,
     images: [defaultOgImage],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

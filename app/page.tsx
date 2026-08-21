@@ -4,13 +4,17 @@ import { ExperienceCard, HotelCard } from '@/components/catalog';
 import { FeaturedExperienceHero } from '@/components/featured-experience-hero';
 import { TrustStrip } from '@/components/trust-strip';
 import { pageMetadata } from '@/lib/seo/metadata';
+import { siteTabTitle } from '@/lib/seo/site';
 
-export const metadata = pageMetadata({
-  title: 'Turismo Tingo María · Catarata Derrepente, tours y reservas',
-  description:
-    'Reserva turismo en Tingo María: catarata Derrepente, río Derrepente, Jurassic Park peruano (Bosque de Piedras), cuevas y hospedaje. Operadores locales verificados.',
-  path: '/',
-});
+export const metadata = {
+  ...pageMetadata({
+    title: 'Turismo Tingo María · Catarata Derrepente, tours y reservas',
+    description:
+      'Reserva turismo en Tingo María: catarata Derrepente, río Derrepente, Jurassic Park peruano (Bosque de Piedras), cuevas y hospedaje. Operadores locales verificados.',
+    path: '/',
+  }),
+  title: { absolute: siteTabTitle },
+};
 export const revalidate = 60;
 
 export default async function Home() {
