@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getAdminSession } from '@/lib/admin';
 import { createClient } from '@/lib/supabase/server';
+import { DeleteExperienceButton } from '@/components/admin/delete-experience-button';
 
 export default async function AdminExperiences() {
   const { isAdmin } = await getAdminSession();
@@ -33,9 +34,12 @@ export default async function AdminExperiences() {
                 S/{e.price} · {e.status} · {e.photos?.length ?? 0} foto(s)
               </p>
             </div>
-            <Link href={`/admin/experiencias/${e.id}`} className="text-sm font-semibold text-slate-700 underline">
-              Editar
-            </Link>
+            <div className="flex shrink-0 items-center gap-4">
+              <Link href={`/admin/experiencias/${e.id}`} className="text-sm font-semibold text-slate-700 underline">
+                Editar
+              </Link>
+              <DeleteExperienceButton id={e.id} name={e.name} compact />
+            </div>
           </li>
         ))}
       </ul>

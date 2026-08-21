@@ -6,12 +6,20 @@ import { useToast } from './toast-provider';
 import type { Experience } from '@/lib/types';
 
 export function AddExperience({ experience }: { experience: Experience }) {
-  const { addExperience, experiences, hotel, nights } = usePackage();
+  const { addExperience, removeExperience, experiences, hotel, nights, total } = usePackage();
   const showToast = useToast();
   const added = experiences.some((item) => item.id === experience.id);
 
-  function add() {
-    if (added) return;
+  function toggle() {
+    if (added) {
+      removeExperience(experience.id);
+      const nextTotal =
+        total -
+        Number(experience.price) * (experiences.find((item) => item.id === experience.id)?.quantity ?? 1);
+      showToast(`Quitaste ${experience.name}`, `S/${Math.max(0, nextTotal)} · Revisa tu reserva`);
+      return;
+    }
+
     addExperience(experience);
     track('experience_added', experience.id, {
       category: experience.category,
@@ -25,15 +33,16 @@ export function AddExperience({ experience }: { experience: Experience }) {
 
   return (
     <button
+      type="button"
       className={
         added
-          ? 'inline-flex min-h-11 items-center justify-center rounded-full bg-amber px-4 py-2 text-sm font-semibold text-forest'
+          ? 'inline-flex min-h-11 items-center justify-center rounded-full border border-forest/20 bg-white px-4 py-2 text-sm font-semibold text-forest transition hover:border-red-300 hover:text-red-700'
           : 'button min-h-11'
       }
-      onClick={add}
+      onClick={toggle}
       aria-pressed={added}
     >
-      {added ? 'En tu reserva ✓' : 'Añadir a mi reserva'}
+      {added ? 'Quitar de reserva' : 'Añadir a mi reserva'}
     </button>
   );
 }

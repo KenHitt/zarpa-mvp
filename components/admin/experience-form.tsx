@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { PhotoUpload } from './photo-upload';
+import { DeleteExperienceButton } from './delete-experience-button';
 import type { Experience } from '@/lib/types';
 
 type Props = { experience?: Experience };
@@ -102,6 +103,11 @@ export function ExperienceForm({ experience }: Props) {
           Cancelar
         </button>
       </div>
+      {experience && (
+        <div className="pt-4">
+          <DeleteExperienceButton id={experience.id} name={experience.name} />
+        </div>
+      )}
     </form>
   );
 }

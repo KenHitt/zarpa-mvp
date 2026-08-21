@@ -68,9 +68,13 @@ export default function MyPackage() {
                   <span className="font-medium text-forest">{x.name}</span>
                   <span className="shrink-0 text-forest">
                     S/{x.price}{' '}
-                    <button className="ml-2 text-red-700" onClick={() => p.removeExperience(x.id)}>
-                      Quitar
-                    </button>
+                  <button
+                    type="button"
+                    className="ml-2 text-sm font-semibold text-red-700 underline underline-offset-2 hover:text-red-800"
+                    onClick={() => p.removeExperience(x.id)}
+                  >
+                    Quitar
+                  </button>
                   </span>
                 </div>
                 <label className="mt-2 block text-sm">
