@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { AddExperience } from '@/components/experience-actions';
+import { ExperienceGallery } from '@/components/experience-gallery';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { FaqBlock } from '@/components/seo/faq-block';
 import { getExperienceBySlug, getExperiences } from '@/lib/data/catalog';
@@ -84,7 +84,6 @@ export default async function ExperienceDetailPage({ params }: Props) {
   const faqs = faqsForExperience(slug);
   const seo = SEO_COPY_BY_SLUG[slug];
   const path = experiencePath(experience);
-  const photo = experience.photos?.[0];
 
   return (
     <article className="shell max-w-3xl py-10 sm:py-14">
@@ -103,18 +102,9 @@ export default async function ExperienceDetailPage({ params }: Props) {
         {seo?.title ?? experience.name}
       </h1>
 
-      {photo && (
-        <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-[24px] bg-forest/10">
-          <Image
-            src={photo}
-            alt={`${experience.name} · turismo Tingo María`}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover object-[center_35%]"
-          />
-        </div>
-      )}
+      {experience.photos?.length ? (
+        <ExperienceGallery photos={experience.photos} name={experience.name} priority />
+      ) : null}
 
       <div className="mt-8 space-y-4 text-base leading-8 text-forest/80">
         {seo?.intro && <p className="text-lg text-forest">{seo.intro}</p>}

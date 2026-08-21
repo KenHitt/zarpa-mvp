@@ -70,13 +70,24 @@ export function PhotoUpload({ folder, nameHint, photos, onChange }: Props) {
                 <p className="truncate text-xs text-slate-500">{url}</p>
                 {i === 0 && <p className="text-xs font-medium text-emerald-700">Portada (primera foto)</p>}
               </div>
-              <button
-                type="button"
-                className="text-sm text-red-600"
-                onClick={() => onChange(photos.filter((_, j) => j !== i))}
-              >
-                Quitar
-              </button>
+              <div className="flex shrink-0 flex-col gap-1">
+                {i > 0 && (
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-emerald-700"
+                    onClick={() => onChange([photos[i], ...photos.filter((_, j) => j !== i)])}
+                  >
+                    Usar como portada
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="text-sm text-red-600"
+                  onClick={() => onChange(photos.filter((_, j) => j !== i))}
+                >
+                  Quitar
+                </button>
+              </div>
             </li>
           ))}
         </ul>
