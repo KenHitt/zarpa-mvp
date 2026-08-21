@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+
+const AUTO_ROTATE_WHEN_MORE_THAN = 2;
+const AUTO_INTERVAL_MS = 5000;
 
 type Props = {
   photos: string[];
@@ -12,23 +15,43 @@ type Props = {
 export function ExperienceGallery({ photos, name, priority = false }: Props) {
   const items = photos.filter(Boolean);
   const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const shouldAutoRotate = items.length > AUTO_ROTATE_WHEN_MORE_THAN;
+
+  useEffect(() => {
+    if (!shouldAutoRotate || paused) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+
+    const id = window.setInterval(() => {
+      setActive((current) => (current + 1) % items.length);
+    }, AUTO_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [shouldAutoRotate, paused, items.length]);
 
   if (!items.length) return null;
 
-  const current = items[active] ?? items[0];
-
   return (
     <div className="mt-8 space-y-3">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-[24px] bg-forest/10">
-        <Image
-          key={current}
-          src={current}
-          alt={`${name} · foto ${active + 1} · turismo Tingo María`}
-          fill
-          priority={priority}
-          sizes="(max-width: 768px) 100vw, 768px"
-          className="object-cover object-[center_35%]"
-        />
+      <div
+        className="relative aspect-[16/10] overflow-hidden rounded-[24px] bg-forest/10"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        {items.map((url, index) => (
+          <Image
+            key={url}
+            src={url}
+            alt={index === active ? `${name} · foto ${active + 1} · turismo Tingo María` : ''}
+            fill
+            priority={priority && index === 0}
+            sizes="(max-width: 768px) 100vw, 768px"
+            aria-hidden={index !== active}
+            className={`object-cover object-[center_35%] transition-opacity duration-700 ${
+              index === active ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
         {items.length > 1 && (
           <p className="absolute bottom-3 right-3 rounded-full bg-forest/75 px-3 py-1 text-xs font-semibold text-white">
             {active + 1} / {items.length}

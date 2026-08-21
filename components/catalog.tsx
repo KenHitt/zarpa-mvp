@@ -1,33 +1,13 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Experience, Hotel } from '@/lib/types';
 import { experiencePath } from '@/lib/slug';
+import { RotatingCover } from '@/components/rotating-cover';
 import { AddExperience } from './experience-actions';
-
-function Cover({ url, name, priority = false }: { url?: string; name: string; priority?: boolean }) {
-  return (
-    <div className="relative aspect-[16/10] overflow-hidden bg-forest/10">
-      {url ? (
-        <Image
-          src={url}
-          alt={name}
-          fill
-          priority={priority}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover object-[center_38%] transition duration-500 group-hover:scale-[1.03]"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest/85 to-amber/70" aria-hidden />
-      )}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-forest/10 to-transparent" />
-    </div>
-  );
-}
 
 export function HotelCard({ hotel, priority = false }: { hotel: Hotel; priority?: boolean }) {
   return (
     <article className="catalog-card group">
-      <Cover url={hotel.photos?.[0]} name={hotel.name} priority={priority} />
+      <RotatingCover photos={hotel.photos} name={hotel.name} priority={priority} />
       <div className="p-5">
         <p className="text-sm text-forest/60">{hotel.location}</p>
         <h3 className="mt-1 font-display text-2xl leading-tight text-forest">{hotel.name}</h3>
@@ -59,7 +39,7 @@ export function ExperienceCard({ experience, priority = false }: { experience: E
   return (
     <article className="catalog-card group">
       <Link href={href} prefetch className="block">
-        <Cover url={experience.photos?.[0]} name={experience.name} priority={priority} />
+        <RotatingCover photos={experience.photos} name={experience.name} priority={priority} />
       </Link>
       <div className="p-5">
         {experience.is_featured && (

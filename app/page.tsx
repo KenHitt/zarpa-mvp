@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { getExperiences, getHotels } from '@/lib/data/catalog';
 import { ExperienceCard, HotelCard } from '@/components/catalog';
+import { FeaturedExperienceHero } from '@/components/featured-experience-hero';
 import { TrustStrip } from '@/components/trust-strip';
-import { experiencePath } from '@/lib/slug';
 import { pageMetadata } from '@/lib/seo/metadata';
 
 export const metadata = pageMetadata({
@@ -17,7 +16,6 @@ export const revalidate = 60;
 export default async function Home() {
   const [hotels, experiences] = await Promise.all([getHotels(), getExperiences()]);
   const featured = experiences.find((x) => x.name.toLowerCase().includes('derrepente')) || experiences[0];
-  const featuredPhoto = featured?.photos?.[0];
   const minExperience = experiences.length ? Math.min(...experiences.map((e) => Number(e.price))) : 0;
   const minHotel = hotels.length ? Math.min(...hotels.map((h) => Number(h.price_per_night))) : 0;
 
@@ -49,41 +47,7 @@ export default async function Home() {
             <TrustStrip />
           </div>
 
-          {featured && (
-            <article className="group relative overflow-hidden rounded-[28px] bg-forest shadow-[0_24px_60px_rgba(17,50,35,.18)]">
-              <div className="relative h-[420px] sm:h-[500px]">
-                {featuredPhoto ? (
-                  <Image
-                    src={featuredPhoto}
-                    alt={featured.name}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 58vw"
-                    className="object-cover object-[center_35%] transition duration-700 group-hover:scale-[1.02]"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest/90 to-amber/60" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-forest/88 via-forest/25 to-forest/5" />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-9">
-                <p className="text-[10px] font-bold uppercase tracking-[.2em] text-amber">Experiencia destacada</p>
-                <h2 className="mt-3 font-display text-3xl sm:text-4xl">{featured.name}</h2>
-                <div className="mt-4 flex items-center justify-between gap-4 text-sm text-white/85">
-                  <span>
-                    {featured.duration} · Desde S/{featured.price}
-                  </span>
-                  <Link
-                    className="rounded-full bg-white px-4 py-2 font-semibold text-forest"
-                    href={experiencePath(featured)}
-                    prefetch
-                  >
-                    Ver tour
-                  </Link>
-                </div>
-              </div>
-            </article>
-          )}
+          {featured && <FeaturedExperienceHero experience={featured} />}
         </div>
       </section>
 
