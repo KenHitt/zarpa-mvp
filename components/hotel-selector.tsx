@@ -8,7 +8,7 @@ import { usePackage } from './package-provider';
 import type { Hotel } from '@/lib/types';
 
 export function HotelSelector({ hotel }: { hotel: Hotel }) {
-  const { setHotel } = usePackage();
+  const { setHotel, openDrawer } = usePackage();
   const router = useRouter();
   const [checkIn, setIn] = useState('');
   const [checkOut, setOut] = useState('');
@@ -17,9 +17,13 @@ export function HotelSelector({ hotel }: { hotel: Hotel }) {
       ? Math.max(0, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
       : 0;
 
-  function addHotel(next: '/mi-paquete' | '/experiencias') {
+  function addHotel(next: 'drawer' | '/experiencias') {
     setHotel(hotel, checkIn, checkOut);
     track('hotel_selected', hotel.id, { nights, price: Number(hotel.price_per_night) });
+    if (next === 'drawer') {
+      openDrawer();
+      return;
+    }
     router.push(next);
   }
 
@@ -54,7 +58,7 @@ export function HotelSelector({ hotel }: { hotel: Hotel }) {
         </p>
       )}
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <button disabled={!nights} onClick={() => addHotel('/mi-paquete')} className="button">
+        <button disabled={!nights} onClick={() => addHotel('drawer')} className="button">
           Agregar hospedaje
         </button>
         <button

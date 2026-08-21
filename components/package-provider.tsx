@@ -1,10 +1,13 @@
 'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { decodePackageShare } from '@/lib/package-share';
 import type { Experience, Hotel, PackageState } from '@/lib/types';
 
 type Context = PackageState & {
+  drawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
   setHotel: (hotel: Hotel, inDate: string, outDate: string) => void;
   removeHotel: () => void;
   addExperience: (x: Experience, date?: string) => void;
@@ -21,6 +24,10 @@ const empty: PackageState = { hotel: null, checkIn: '', checkOut: '', experience
 export function PackageProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<PackageState>(empty);
   const [ready, setReady] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -32,6 +39,7 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
         setState(decoded);
         localStorage.setItem('zarpa-package', JSON.stringify(decoded));
         sessionStorage.setItem('zarpa-imported-share', '1');
+        setDrawerOpen(true);
       }
       window.history.replaceState({}, '', window.location.pathname);
     } else {
@@ -57,6 +65,9 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
 
     return {
       ...state,
+      drawerOpen,
+      openDrawer,
+      closeDrawer,
       nights,
       total,
       setHotel: (hotel: Hotel, checkIn: string, checkOut: string) =>
@@ -87,7 +98,7 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
         setState((s) => ({ ...s, experiences: s.experiences.filter((x) => x.id !== id) })),
       clear: () => setState(empty),
     };
-  }, [state]);
+  }, [state, drawerOpen, openDrawer, closeDrawer]);
 
   return <PackageContext.Provider value={value}>{children}</PackageContext.Provider>;
 }

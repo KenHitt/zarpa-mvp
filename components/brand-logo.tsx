@@ -9,8 +9,8 @@ type Props = {
 };
 
 const assets = {
-  full: { src: '/brand/logotipo.png', width: 168, height: 44, className: 'h-10 w-auto sm:h-11' },
-  mark: { src: '/brand/icono.png', width: 44, height: 44, className: 'h-10 w-10 object-contain' },
+  full: { src: '/brand/logotipo.png', width: 240, height: 64, className: 'h-14 w-auto sm:h-16' },
+  mark: { src: '/brand/icono.png', width: 44, height: 44, className: 'h-11 w-11 object-contain' },
 } as const;
 
 export function BrandLogo({ href = '/', variant = 'full', className = '', priority = false }: Props) {

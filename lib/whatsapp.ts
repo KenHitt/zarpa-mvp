@@ -2,7 +2,7 @@ import type { PackageState } from '@/lib/types';
 import { buildPackageShareUrl } from '@/lib/package-share';
 
 export function whatsappPhone(): string | null {
-  const raw = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  const raw = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '51921682529';
   if (!raw) return null;
   const digits = raw.replace(/\D/g, '');
   return digits || null;
