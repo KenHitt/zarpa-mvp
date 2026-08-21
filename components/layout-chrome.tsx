@@ -7,6 +7,7 @@ import { ToastProvider } from './toast-provider';
 import { Header } from './header';
 import { TripBar } from './trip-bar';
 import { AnalyticsPageView } from './analytics-page-view';
+import { BrandLogo } from './brand-logo';
 
 export function LayoutChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,11 +24,24 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
         <Header />
         <main>{children}</main>
         <footer className="mt-16 border-t border-forest/10 px-4 py-8 pb-24 text-center text-sm text-forest/70">
-          Zarpa · Tingo María, Huánuco
-          <span className="mx-2">·</span>
-          <a className="underline" href="/partner/login">
-            Operadores
-          </a>
+          <div className="mx-auto flex max-w-xs flex-col items-center gap-3">
+            <BrandLogo href="/" variant="full" className="opacity-90" />
+            <p>Tingo María, Huánuco</p>
+          </div>
+          <p className="mt-4">
+            <a
+              className="underline hover:text-amber"
+              href="https://www.tiktok.com/@zarpa.travel"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              TikTok
+            </a>
+            <span className="mx-2">·</span>
+            <a className="underline hover:text-forest" href="/partner/login">
+              Operadores
+            </a>
+          </p>
         </footer>
         <TripBar />
       </ToastProvider>

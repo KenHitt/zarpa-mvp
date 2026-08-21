@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { usePackage } from '@/components/package-provider';
 import { BookingSteps } from '@/components/booking-steps';
 import { TrustStrip } from '@/components/trust-strip';
+import { WhatsAppActions } from '@/components/whatsapp-actions';
 
 export default function Checkout() {
   const p = usePackage();
@@ -121,6 +122,14 @@ export default function Checkout() {
           {sending ? 'Registrando…' : 'Confirmar y pagar'}
         </button>
       </form>
+
+      <div className="mt-8 border-t border-forest/10 pt-6">
+        <p className="text-sm font-semibold text-forest">¿Prefieres coordinar por WhatsApp?</p>
+        <p className="mt-1 text-sm text-forest/60">Te enviamos el resumen del viaje listo para confirmar con un operador.</p>
+        <div className="mt-4">
+          <WhatsAppActions layout="inline" />
+        </div>
+      </div>
     </section>
   );
 }

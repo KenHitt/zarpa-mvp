@@ -1,12 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { usePackage } from '@/components/package-provider';
 import { ItinerarySuggestions } from '@/components/itinerary-suggestions';
 import { BookingSteps } from '@/components/booking-steps';
+import { WhatsAppActions } from '@/components/whatsapp-actions';
 
 export default function MyPackage() {
   const p = usePackage();
+  const [sharedBanner, setSharedBanner] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('zarpa-imported-share') === '1') {
+      setSharedBanner(true);
+      sessionStorage.removeItem('zarpa-imported-share');
+    }
+  }, []);
+
   const hasItems = !!p.hotel || p.experiences.length > 0;
 
   if (!hasItems) {
@@ -27,13 +38,15 @@ export default function MyPackage() {
     );
   }
 
-  const message = encodeURIComponent(
-    `Hola Zarpa, quiero reservar: ${p.hotel ? `${p.hotel.name}, ${p.nights} noche(s)` : 'sin hotel'}, experiencias: ${p.experiences.map((x) => x.name).join(', ') || 'ninguna'}. Total S/${p.total}.`
-  );
 
   return (
     <section className="shell max-w-3xl py-12">
       <BookingSteps current={2} />
+      {sharedBanner && (
+        <div className="mt-6 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/10 px-4 py-3 text-sm text-forest">
+          <strong>Paquete compartido contigo.</strong> Revisa las fechas y reserva cuando quieras.
+        </div>
+      )}
       <div className="mt-8 flex items-end justify-between gap-4">
         <div>
           <p className="eyebrow">Paso 2 · Revisar</p>
@@ -116,17 +129,14 @@ export default function MyPackage() {
         <b className="text-2xl">S/{p.total}</b>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-5 space-y-4">
         <Link href="/checkout" className="button w-full bg-amber text-forest hover:bg-amber/90 sm:w-auto">
           Continuar al pago
         </Link>
-        <a
-          className="text-center text-sm font-semibold text-forest/60 underline underline-offset-4 sm:ml-2"
-          target="_blank"
-          href={`https://wa.me/?text=${message}`}
-        >
-          ¿Dudas? WhatsApp
-        </a>
+        <WhatsAppActions />
+        <p className="text-sm text-forest/60">
+          ¿Prefieres hablar con alguien? Reserva directo por WhatsApp o comparte el paquete con tu grupo antes de pagar.
+        </p>
       </div>
 
       <ItinerarySuggestions />

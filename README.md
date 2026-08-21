@@ -50,6 +50,26 @@ Configura en `.env.local` / Vercel:
 
 Los operadores reciben el correo en la cuenta de **Authentication** vinculada en la tabla `operators`. Si falta Resend, la reserva se crea igual; solo se omiten los correos.
 
+### SEO (Google)
+
+- Páginas por experiencia: `/experiencias/catarata-derrepente`, etc.
+- Guías: `/guia/turismo-tingo-maria`, `/guia/catarata-derrepente`, `/guia/jurassic-park-peruano`
+- `sitemap.xml` y `robots.txt` generados automáticamente
+- Configura `NEXT_PUBLIC_SITE_URL` con tu dominio en Vercel
+- Ejecuta la migración `202608100008_seo_slugs.sql` en Supabase (slugs en DB)
+- Después del deploy: registra el sitio en [Google Search Console](https://search.google.com/search-console) y envía el sitemap
+
+### WhatsApp (reservar y compartir)
+
+En **Tu reserva** y **Checkout** hay botones para:
+
+- **Reservar por WhatsApp** — mensaje prellenado con hotel, experiencias y total.
+- **Compartir con mi grupo** — link del paquete que abre la misma reserva en otro celular.
+
+Configura `NEXT_PUBLIC_WHATSAPP_NUMBER` con código de país (Perú: `519XXXXXXXX`). Ejemplo: `51987654321`.
+
+También usa `NEXT_PUBLIC_SITE_URL` para que el link compartido apunte a tu dominio en producción.
+
 ## 3. Desplegar en Vercel
 
 1. Sube este repositorio a GitHub y en Vercel selecciona **New Project > Import**.

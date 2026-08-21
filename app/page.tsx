@@ -3,7 +3,15 @@ import Image from 'next/image';
 import { getExperiences, getHotels } from '@/lib/data/catalog';
 import { ExperienceCard, HotelCard } from '@/components/catalog';
 import { TrustStrip } from '@/components/trust-strip';
+import { experiencePath } from '@/lib/slug';
+import { pageMetadata } from '@/lib/seo/metadata';
 
+export const metadata = pageMetadata({
+  title: 'Turismo Tingo María · Catarata Derrepente, tours y reservas',
+  description:
+    'Reserva turismo en Tingo María: catarata Derrepente, río Derrepente, Jurassic Park peruano (Bosque de Piedras), cuevas y hospedaje. Operadores locales verificados.',
+  path: '/',
+});
 export const revalidate = 60;
 
 export default async function Home() {
@@ -20,11 +28,11 @@ export default async function Home() {
           <div>
             <p className="eyebrow">Tingo María, Perú</p>
             <h1 className="mt-5 max-w-xl font-display text-5xl leading-[.96] tracking-tight text-forest sm:text-7xl">
-              Vive la selva. Reserva en minutos.
+              Turismo en Tingo María: reserva en minutos
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-forest/70">
-              Cataratas, cuevas y rutas locales con operadores de Tingo María. Sin filas, sin complicaciones — solo
-              eliges, pagas y listo.
+              Catarata Derrepente, río Derrepente, Bosque de Piedras, cuevas y tours locales con operadores de
+              Tingo María. Sin filas — eliges, pagas y listo.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/experiencias" className="button" prefetch>
@@ -65,8 +73,12 @@ export default async function Home() {
                   <span>
                     {featured.duration} · Desde S/{featured.price}
                   </span>
-                  <Link className="rounded-full bg-white px-4 py-2 font-semibold text-forest" href="/experiencias">
-                    Explorar
+                  <Link
+                    className="rounded-full bg-white px-4 py-2 font-semibold text-forest"
+                    href={experiencePath(featured)}
+                    prefetch
+                  >
+                    Ver tour
                   </Link>
                 </div>
               </div>
@@ -166,6 +178,26 @@ export default async function Home() {
             {hotels.slice(0, 3).map((h) => (
               <HotelCard key={h.id} hotel={h} />
             ))}
+          </div>
+        </div>
+      </section>
+      <section className="border-b border-forest/10 bg-cream/30">
+        <div className="shell py-12 sm:py-14">
+          <p className="eyebrow">Guías de viaje</p>
+          <h2 className="section-title">Planifica tu aventura en Tingo María</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <Link href="/guia/turismo-tingo-maria" className="rounded-2xl bg-white p-5 ring-1 ring-forest/10 transition hover:shadow-md">
+              <h3 className="font-display text-xl text-forest">Turismo Tingo María</h3>
+              <p className="mt-2 text-sm text-forest/65">Qué hacer, cuántos días y cómo reservar.</p>
+            </Link>
+            <Link href="/guia/catarata-derrepente" className="rounded-2xl bg-white p-5 ring-1 ring-forest/10 transition hover:shadow-md">
+              <h3 className="font-display text-xl text-forest">Catarata Derrepente</h3>
+              <p className="mt-2 text-sm text-forest/65">Río Derrepente, Cayumba y tips del tour.</p>
+            </Link>
+            <Link href="/guia/jurassic-park-peruano" className="rounded-2xl bg-white p-5 ring-1 ring-forest/10 transition hover:shadow-md">
+              <h3 className="font-display text-xl text-forest">Jurassic Park peruano</h3>
+              <p className="mt-2 text-sm text-forest/65">Bosque de Piedras y formaciones rocosas.</p>
+            </Link>
           </div>
         </div>
       </section>

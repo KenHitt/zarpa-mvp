@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { decodePackageShare } from '@/lib/package-share';
 import type { Experience, Hotel, PackageState } from '@/lib/types';
 
 type Context = PackageState & {
@@ -22,8 +23,22 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem('zarpa-package');
-    if (stored) setState(JSON.parse(stored));
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get('p');
+
+    if (shared) {
+      const decoded = decodePackageShare(shared);
+      if (decoded) {
+        setState(decoded);
+        localStorage.setItem('zarpa-package', JSON.stringify(decoded));
+        sessionStorage.setItem('zarpa-imported-share', '1');
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+    } else {
+      const stored = localStorage.getItem('zarpa-package');
+      if (stored) setState(JSON.parse(stored));
+    }
+
     setReady(true);
   }, []);
 

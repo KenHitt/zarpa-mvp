@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { experienceSlug, resolveSlug } from '@/lib/slug';
 import type { Experience, Hotel } from '@/lib/types';
 
 function catalogDb() {
@@ -53,3 +54,16 @@ const cachedHotel = unstable_cache(
 export const getHotels = () => cachedHotels();
 export const getHotel = (id: string) => cachedHotel(id);
 export const getExperiences = () => cachedExperiences();
+
+export async function getExperienceBySlug(rawSlug: string): Promise<Experience | null> {
+  const slug = resolveSlug(rawSlug);
+  const experiences = await getExperiences();
+  return (
+    experiences.find((item) => experienceSlug(item) === slug || item.slug === slug) ?? null
+  );
+}
+
+export async function getAllExperienceSlugs(): Promise<string[]> {
+  const experiences = await getExperiences();
+  return experiences.map((item) => experienceSlug(item));
+}

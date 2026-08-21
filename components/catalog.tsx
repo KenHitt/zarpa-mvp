@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Experience, Hotel } from '@/lib/types';
+import { experiencePath } from '@/lib/slug';
 import { AddExperience } from './experience-actions';
 
 function Cover({ url, name, priority = false }: { url?: string; name: string; priority?: boolean }) {
@@ -53,9 +54,13 @@ export function HotelCard({ hotel, priority = false }: { hotel: Hotel; priority?
 }
 
 export function ExperienceCard({ experience, priority = false }: { experience: Experience; priority?: boolean }) {
+  const href = experiencePath(experience);
+
   return (
     <article className="catalog-card group">
-      <Cover url={experience.photos?.[0]} name={experience.name} priority={priority} />
+      <Link href={href} prefetch className="block">
+        <Cover url={experience.photos?.[0]} name={experience.name} priority={priority} />
+      </Link>
       <div className="p-5">
         {experience.is_featured && (
           <span className="mb-2 inline-block rounded-full bg-amber/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-forest">
@@ -65,13 +70,22 @@ export function ExperienceCard({ experience, priority = false }: { experience: E
         <p className="text-xs font-bold uppercase tracking-[.13em] text-amber">
           {experience.category} <span className="text-forest/35">·</span> {experience.duration}
         </p>
-        <h3 className="mt-2 font-display text-2xl leading-tight text-forest">{experience.name}</h3>
+        <h3 className="mt-2 font-display text-2xl leading-tight text-forest">
+          <Link href={href} prefetch className="hover:underline">
+            {experience.name}
+          </Link>
+        </h3>
         <p className="mt-3 line-clamp-2 text-sm leading-6 text-forest/75">{experience.description}</p>
         <p className="mt-3 truncate text-xs text-forest/55">Salida: {experience.meeting_point}</p>
         <p className="mt-2 text-xs text-forest/45">Reserva en minutos · cupos según disponibilidad</p>
         <div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4">
           <b className="text-lg text-forest">S/{experience.price}</b>
-          <AddExperience experience={experience} />
+          <div className="flex items-center gap-2">
+            <Link href={href} prefetch className="hidden text-sm font-semibold text-forest underline underline-offset-4 sm:inline">
+              Ver tour
+            </Link>
+            <AddExperience experience={experience} />
+          </div>
         </div>
       </div>
     </article>
