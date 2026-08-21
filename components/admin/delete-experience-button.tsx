@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { revalidatePublicCatalog } from '@/lib/admin/revalidate-catalog-client';
 
 type Props = {
   id: string;
@@ -36,6 +37,7 @@ export function DeleteExperienceButton({ id, name, compact = false }: Props) {
       return;
     }
 
+    await revalidatePublicCatalog();
     router.push('/admin/experiencias');
     router.refresh();
   }

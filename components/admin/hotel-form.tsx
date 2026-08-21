@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { PhotoUpload } from './photo-upload';
+import { revalidatePublicCatalog } from '@/lib/admin/revalidate-catalog-client';
 import type { Hotel } from '@/lib/types';
 
 type Props = { hotel?: Hotel };
@@ -45,6 +46,7 @@ export function HotelForm({ hotel }: Props) {
       setSaving(false);
       return;
     }
+    await revalidatePublicCatalog();
     router.push('/admin/hoteles');
     router.refresh();
   }

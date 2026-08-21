@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { PhotoUpload } from './photo-upload';
 import { DeleteExperienceButton } from './delete-experience-button';
+import { revalidatePublicCatalog } from '@/lib/admin/revalidate-catalog-client';
 import type { Experience } from '@/lib/types';
 
 type Props = { experience?: Experience };
@@ -47,6 +48,7 @@ export function ExperienceForm({ experience }: Props) {
       setSaving(false);
       return;
     }
+    await revalidatePublicCatalog();
     router.push('/admin/experiencias');
     router.refresh();
   }

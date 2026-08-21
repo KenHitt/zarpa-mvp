@@ -18,8 +18,8 @@ const cachedHotels = unstable_cache(
     if (error) throw error;
     return data ?? [];
   },
-  ['zarpa-active-hotels-v2'],
-  { revalidate: 60, tags: ['catalog-hotels'] }
+  ['zarpa-active-hotels-v3'],
+  { revalidate: 30, tags: ['catalog-hotels'] }
 );
 
 const cachedExperiences = unstable_cache(
@@ -30,13 +30,14 @@ const cachedExperiences = unstable_cache(
       .from('experiences')
       .select('*')
       .eq('status', 'active')
+      .neq('category', 'Transporte')
       .order('is_featured', { ascending: false })
       .order('price');
     if (error) throw error;
     return data ?? [];
   },
-  ['zarpa-active-experiences-v2'],
-  { revalidate: 60, tags: ['catalog-experiences'] }
+  ['zarpa-active-experiences-v4'],
+  { revalidate: 30, tags: ['catalog-experiences'] }
 );
 
 const cachedHotel = unstable_cache(
@@ -47,8 +48,8 @@ const cachedHotel = unstable_cache(
     if (error) throw error;
     return data;
   },
-  ['zarpa-active-hotel-v2'],
-  { revalidate: 60, tags: ['catalog-hotels'] }
+  ['zarpa-active-hotel-v3'],
+  { revalidate: 30, tags: ['catalog-hotels'] }
 );
 
 export const getHotels = () => cachedHotels();

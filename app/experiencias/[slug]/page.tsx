@@ -125,6 +125,10 @@ export default async function ExperienceDetailPage({ params }: Props) {
           {experience.category.toLowerCase()} en Tingo María y quieren reservar con un operador local
           verificado.
         </p>
+        <p className="rounded-xl bg-cream/70 px-4 py-3 text-sm text-forest/80">
+          <strong>Traslado incluido:</strong> recojo en hotel o en el punto de encuentro. Rutas especiales
+          (aeropuerto, grupos) se coordinan por WhatsApp al reservar.
+        </p>
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl bg-cream/60 p-5 ring-1 ring-forest/10">

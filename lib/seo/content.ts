@@ -43,6 +43,11 @@ const DEFAULT_FAQS: FaqItem[] = [
       'Elige tu tour en Zarpa, añádelo a tu reserva, revisa fechas y paga con Yape, Plin o tarjeta. El operador local confirma tu cupo.',
   },
   {
+    question: '¿El traslado está incluido?',
+    answer:
+      'Sí en la mayoría de tours: recojo en hotel o en el punto de encuentro indicado. Si necesitas una ruta especial, coordínalo por WhatsApp al reservar.',
+  },
+  {
     question: '¿Puedo combinar varias experiencias en un solo viaje?',
     answer:
       'Sí. Arma tu paquete con varias experiencias y, si quieres, añade hospedaje en la misma reserva.',
