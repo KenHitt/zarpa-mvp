@@ -6,6 +6,7 @@ import { PackageProvider } from './package-provider';
 import { ToastProvider } from './toast-provider';
 import { Header } from './header';
 import { TripBar } from './trip-bar';
+import { WhatsAppFloat } from './whatsapp-float';
 import { AnalyticsPageView } from './analytics-page-view';
 import { BrandLogo } from './brand-logo';
 
@@ -44,6 +45,7 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
           </p>
         </footer>
         <TripBar />
+        <WhatsAppFloat />
       </ToastProvider>
     </PackageProvider>
   );

@@ -24,7 +24,7 @@ export function FeaturedExperienceHero({ experience }: Props) {
 
       {/* Scrim sutil: solo la franja inferior donde va el texto; la foto se ve nítida */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-forest/85 via-forest/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-forest/92 via-forest/50 to-transparent"
         aria-hidden
       />
 

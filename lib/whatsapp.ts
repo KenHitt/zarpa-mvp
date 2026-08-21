@@ -14,6 +14,18 @@ export function whatsappUrl(message: string) {
   return phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
 }
 
+export function whatsappContactMessage() {
+  return 'Hola Zarpa 👋 Tengo una consulta sobre tours en Tingo María.';
+}
+
+export function whatsappContactUrl() {
+  return whatsappUrl(whatsappContactMessage());
+}
+
+export function hasWhatsApp() {
+  return Boolean(whatsappPhone());
+}
+
 function fmtDate(iso: string) {
   if (!iso) return '';
   const [year, month, day] = iso.split('-');
