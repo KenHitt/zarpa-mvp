@@ -29,7 +29,7 @@ export default async function Home() {
               Turismo en Tingo María: reserva en minutos
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-forest/70">
-              Catarata Derrepente, río Derrepente, Bosque de Piedras, cuevas y tours locales con operadores de
+              Catarata Derrepente, ríos, cuevas y tours locales con operadores de
               Tingo María. Sin filas — eliges, pagas y listo.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

@@ -14,6 +14,7 @@ type Props = {
   aspectClass?: string;
   imageClass?: string;
   intervalMs?: number;
+  showOverlay?: boolean;
 };
 
 export function RotatingCover({
@@ -24,6 +25,7 @@ export function RotatingCover({
   aspectClass = 'aspect-[16/10]',
   imageClass = 'object-cover object-[center_38%]',
   intervalMs = DEFAULT_INTERVAL_MS,
+  showOverlay = true,
 }: Props) {
   const items = (photos ?? []).filter(Boolean);
   const shouldRotate = items.length > ROTATE_WHEN_MORE_THAN;
@@ -69,7 +71,9 @@ export function RotatingCover({
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-forest via-forest/85 to-amber/70" aria-hidden />
       )}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-forest/10 to-transparent" />
+      {showOverlay && (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/55 via-forest/10 to-transparent" />
+      )}
       {shouldRotate && !reduceMotion && (
         <p className="pointer-events-none absolute bottom-2 right-2 rounded-full bg-forest/70 px-2 py-0.5 text-[10px] font-semibold text-white">
           {index + 1}/{items.length}
