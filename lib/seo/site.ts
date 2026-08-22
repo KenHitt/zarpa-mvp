@@ -16,7 +16,7 @@ export const defaultOgImageSize = { width: 1536, height: 1024 };
 /** Datos de negocio para SEO local (rich results de Google). */
 export const businessInfo = {
   phone: '+51921682529',
-  email: 'reservas@zarpa.travel',
+  email: 'zarpatravel@gmail.com',
   priceRange: 'S/40 – S/300',
   address: {
     locality: 'Tingo María',
