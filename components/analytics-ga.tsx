@@ -11,16 +11,23 @@ declare global {
   }
 }
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const RAW_GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
+// Un ID sin formato G-XXXXXXXXXX haría fallar la medición en silencio: se descarta y se avisa.
+const GA_ID = /^G-[A-Z0-9]+$/i.test(RAW_GA_ID) ? RAW_GA_ID : '';
 
 /**
  * GA4 con pageviews por cambio de ruta (app router no recarga la página).
- * No renderiza nada si falta NEXT_PUBLIC_GA_MEASUREMENT_ID.
+ * No renderiza nada si falta o es inválido NEXT_PUBLIC_GA_MEASUREMENT_ID.
  */
 export function GoogleAnalytics() {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (RAW_GA_ID && !GA_ID) {
+      console.warn(
+        `[GA4] NEXT_PUBLIC_GA_MEASUREMENT_ID "${RAW_GA_ID}" no tiene el formato G-XXXXXXXXXX. Revisa tu .env.local y Vercel.`
+      );
+    }
     if (!GA_ID || typeof window.gtag !== 'function') return;
     window.gtag('config', GA_ID, { page_path: pathname + window.location.search });
   }, [pathname]);
