@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { notifyBookingCreated } from '@/lib/notifications/booking-created';
+import { checkRateLimit, clientIp } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -12,8 +13,32 @@ type Payload = {
   experiences: { id: string; date: string; quantity: number }[];
 };
 
+// Firma binaria (magic bytes) de los formatos de imagen que aceptamos como comprobante.
+// El input HTML solo "sugiere" accept="image/*"; esto valida el contenido real subido.
+function sniffImageType(bytes: Uint8Array): string | null {
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
+  if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) {
+    return 'image/png';
+  }
+  if (bytes.length >= 12 && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
+    return 'image/webp';
+  }
+  if (bytes.length >= 6 && bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) return 'image/gif';
+  return null;
+}
+
 export async function POST(request: Request) {
   try {
+    // Máximo 5 reservas por IP cada 10 minutos: suficiente para un grupo real,
+    // insuficiente para un bot generando reservas basura.
+    const allowed = await checkRateLimit(`booking:${clientIp(request)}`, 5, 10 * 60 * 1000);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Demasiadas solicitudes. Intenta de nuevo en unos minutos o escríbenos por WhatsApp.' },
+        { status: 429 }
+      );
+    }
+
     const form = await request.formData();
     const raw = form.get('payload');
     if (typeof raw !== 'string') throw Error('Datos de viaje inválidos');
@@ -58,6 +83,11 @@ export async function POST(request: Request) {
 
     const proof = form.get('proof');
     if (!(proof instanceof File) || !proof.size) throw Error('Sube tu comprobante de pago');
+    if (proof.size > 5_000_000) throw Error('El comprobante no puede superar 5 MB');
+
+    const proofHeader = new Uint8Array(await proof.slice(0, 12).arrayBuffer());
+    const detectedType = sniffImageType(proofHeader);
+    if (!detectedType) throw Error('El comprobante debe ser una imagen (JPG, PNG, WEBP o GIF)');
 
     const db = createAdminClient();
 
@@ -130,12 +160,11 @@ export async function POST(request: Request) {
 
     if (bookError) throw bookError;
 
-    if (proof instanceof File && proof.size) {
-      if (proof.size > 5_000_000) throw Error('El comprobante no puede superar 5 MB');
-      const ext = proof.name.split('.').pop() || 'jpg';
+    {
+      const ext = detectedType.split('/')[1];
       const path = `${booking.id}/comprobante.${ext}`;
       const { error: upError } = await db.storage.from('payment-proofs').upload(path, proof, {
-        contentType: proof.type,
+        contentType: detectedType,
         upsert: false,
       });
       if (upError) throw upError;

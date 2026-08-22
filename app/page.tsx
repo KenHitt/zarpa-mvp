@@ -210,8 +210,15 @@ export default async function Home() {
       </section>
       <section className="border-b border-forest/10 bg-cream/30">
         <div className="shell py-12 sm:py-14">
-          <p className="eyebrow">Guías de viaje</p>
-          <h2 className="section-title">Planifica tu aventura en Tingo María</h2>
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Guías de viaje</p>
+              <h2 className="section-title">Planifica tu aventura en Tingo María</h2>
+            </div>
+            <Link className="hidden text-sm font-semibold text-forest underline underline-offset-4 sm:block" href="/guia">
+              Ver todas
+            </Link>
+          </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             <Link href="/guia/turismo-tingo-maria" className="rounded-2xl bg-white p-5 ring-1 ring-forest/10 transition hover:shadow-md">
               <h3 className="font-display text-xl text-forest">Turismo Tingo María</h3>

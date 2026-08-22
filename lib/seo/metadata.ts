@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteUrl } from './site';
+import { defaultDescription, defaultKeywords, defaultOgImage, defaultOgImageSize, siteName, siteUrl } from './site';
 
 type PageMeta = {
   title: string;
@@ -20,6 +20,10 @@ export function pageMetadata({
 }: PageMeta): Metadata {
   const url = `${siteUrl()}${path.startsWith('/') ? path : `/${path}`}`;
   const ogImage = image ?? defaultOgImage;
+  // Solo conocemos las dimensiones reales del logo por defecto; las fotos de
+  // producto vienen de Supabase Storage con tamaños variables, así que ahí
+  // dejamos que el crawler las detecte (no declarar width/height incorrectos).
+  const ogImageSize = ogImage === defaultOgImage ? defaultOgImageSize : undefined;
 
   return {
     title,
@@ -34,7 +38,7 @@ export function pageMetadata({
       siteName,
       title,
       description,
-      images: ogImage ? [{ url: ogImage, alt: title }] : undefined,
+      images: ogImage ? [{ url: ogImage, ...ogImageSize, alt: title }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',

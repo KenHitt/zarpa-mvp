@@ -33,7 +33,7 @@ export default function JurassicParkGuide() {
       <Breadcrumbs
         items={[
           { label: 'Inicio', href: '/' },
-          { label: 'Guías', href: '/guia/turismo-tingo-maria' },
+          { label: 'Guías', href: '/guia' },
           { label: 'Jurassic Park peruano' },
         ]}
       />
@@ -75,7 +75,7 @@ export default function JurassicParkGuide() {
           }),
           breadcrumbSchema([
             { name: 'Inicio', path: '/' },
-            { name: 'Guías', path: '/guia/turismo-tingo-maria' },
+            { name: 'Guías', path: '/guia' },
             { name: 'Jurassic Park peruano', path },
           ]),
           faqSchema(faqs),

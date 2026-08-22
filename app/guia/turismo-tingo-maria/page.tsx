@@ -57,7 +57,7 @@ export default function TurismoTingoMariaGuide() {
       <Breadcrumbs
         items={[
           { label: 'Inicio', href: '/' },
-          { label: 'Guías', href: '/guia/turismo-tingo-maria' },
+          { label: 'Guías', href: '/guia' },
           { label: 'Turismo Tingo María' },
         ]}
       />
@@ -111,6 +111,7 @@ export default function TurismoTingoMariaGuide() {
           }),
           breadcrumbSchema([
             { name: 'Inicio', path: '/' },
+            { name: 'Guías', path: '/guia' },
             { name: 'Turismo Tingo María', path },
           ]),
           faqSchema(faqs),

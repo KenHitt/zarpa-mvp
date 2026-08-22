@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { checkRateLimit, clientIp } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -13,6 +14,16 @@ type Payload = {
 
 export async function POST(request: Request) {
   try {
+    // Máximo 3 reseñas por IP cada hora: alguien real no reseña más que eso;
+    // un bot de espam sí. Las reseñas además quedan 'pending' hasta que un admin las aprueba.
+    const allowed = await checkRateLimit(`review:${clientIp(request)}`, 3, 60 * 60 * 1000);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Demasiadas reseñas enviadas. Intenta de nuevo más tarde.' },
+        { status: 429 }
+      );
+    }
+
     const body = (await request.json()) as Payload;
 
     const experienceId = body.experienceId?.trim() || null;

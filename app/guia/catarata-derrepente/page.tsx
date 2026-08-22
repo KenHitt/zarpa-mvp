@@ -34,7 +34,7 @@ export default function CatarataDerrepenteGuide() {
       <Breadcrumbs
         items={[
           { label: 'Inicio', href: '/' },
-          { label: 'Guías', href: '/guia/turismo-tingo-maria' },
+          { label: 'Guías', href: '/guia' },
           { label: 'Catarata Derrepente' },
         ]}
       />
@@ -79,7 +79,7 @@ export default function CatarataDerrepenteGuide() {
           }),
           breadcrumbSchema([
             { name: 'Inicio', path: '/' },
-            { name: 'Guías', path: '/guia/turismo-tingo-maria' },
+            { name: 'Guías', path: '/guia' },
             { name: 'Catarata Derrepente', path },
           ]),
           faqSchema(faqs),

@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getStoredConsent, onConsentChange, type ConsentValue } from '@/lib/cookie-consent';
 
 declare global {
   interface Window {
@@ -21,6 +22,12 @@ const GA_ID = /^G-[A-Z0-9]+$/i.test(RAW_GA_ID) ? RAW_GA_ID : '';
  */
 export function GoogleAnalytics() {
   const pathname = usePathname();
+  const [consent, setConsent] = useState<ConsentValue | null>(null);
+
+  useEffect(() => {
+    setConsent(getStoredConsent());
+    return onConsentChange(setConsent);
+  }, []);
 
   useEffect(() => {
     if (RAW_GA_ID && !GA_ID) {
@@ -28,11 +35,12 @@ export function GoogleAnalytics() {
         `[GA4] NEXT_PUBLIC_GA_MEASUREMENT_ID "${RAW_GA_ID}" no tiene el formato G-XXXXXXXXXX. Revisa tu .env.local y Vercel.`
       );
     }
-    if (!GA_ID || typeof window.gtag !== 'function') return;
+    if (!GA_ID || consent !== 'accepted' || typeof window.gtag !== 'function') return;
     window.gtag('config', GA_ID, { page_path: pathname + window.location.search });
-  }, [pathname]);
+  }, [pathname, consent]);
 
-  if (!GA_ID) return null;
+  // Sin ID válido o sin consentimiento aceptado: no se carga ningún script de Google.
+  if (!GA_ID || consent !== 'accepted') return null;
 
   return (
     <>

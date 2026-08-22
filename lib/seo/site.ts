@@ -10,6 +10,8 @@ export const defaultDescription =
   'Reserva tours en Tingo María: catarata Derrepente, río Derrepente, Bosque de Piedras (Jurassic Park peruano), cuevas y más. Operadores locales verificados. Paga con Yape o Plin.';
 
 export const defaultOgImage = '/brand/logotipo.png';
+// Dimensiones reales del archivo (debe coincidir o WhatsApp/Facebook/X recortan mal la vista previa).
+export const defaultOgImageSize = { width: 1536, height: 1024 };
 
 /** Datos de negocio para SEO local (rich results de Google). */
 export const businessInfo = {

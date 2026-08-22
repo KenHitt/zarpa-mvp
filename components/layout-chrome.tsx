@@ -10,7 +10,9 @@ import { WhatsAppFloat } from './whatsapp-float';
 import { ReservationDrawer } from './reservation-drawer';
 import { AnalyticsPageView } from './analytics-page-view';
 import { GoogleAnalytics } from './analytics-ga';
+import { CookieConsent } from './cookie-consent';
 import { BrandLogo } from './brand-logo';
+import { businessInfo } from '@/lib/seo/site';
 
 export function LayoutChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -31,8 +33,17 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
           <div className="mx-auto flex max-w-xs flex-col items-center gap-3">
             <BrandLogo href="/" variant="full" className="h-16 sm:h-[4.5rem]" />
             <p>Tingo María, Huánuco</p>
+            <p>
+              <a className="underline hover:text-forest" href={`mailto:${businessInfo.email}`}>
+                {businessInfo.email}
+              </a>
+              <span className="mx-2">·</span>
+              <a className="underline hover:text-forest" href={`tel:${businessInfo.phone}`}>
+                {businessInfo.phone}
+              </a>
+            </p>
           </div>
-          <p className="mt-4">
+          <p className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <a
               className="underline hover:text-amber"
               href="https://www.tiktok.com/@zarpa.travel"
@@ -41,7 +52,19 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
             >
               TikTok
             </a>
-            <span className="mx-2">·</span>
+            <span>·</span>
+            <a className="underline hover:text-forest" href="/guia">
+              Guías de viaje
+            </a>
+            <span>·</span>
+            <a className="underline hover:text-forest" href="/privacidad">
+              Privacidad
+            </a>
+            <span>·</span>
+            <a className="underline hover:text-forest" href="/terminos">
+              Términos
+            </a>
+            <span>·</span>
             <a className="underline hover:text-forest" href="/partner/login">
               Operadores
             </a>
@@ -50,6 +73,7 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
         <TripBar />
         <ReservationDrawer />
         <WhatsAppFloat />
+        <CookieConsent />
       </ToastProvider>
     </PackageProvider>
   );

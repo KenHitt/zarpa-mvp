@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { usePackage } from '@/components/package-provider';
 import { ReservationPanel } from '@/components/reservation-panel';
 
 const HIDDEN_ON = ['/checkout', '/reserva-confirmada'];
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function ReservationDrawer() {
   const pathname = usePathname();
   const { drawerOpen, closeDrawer } = usePackage();
+  const asideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (HIDDEN_ON.includes(pathname)) closeDrawer();
@@ -33,6 +36,39 @@ export function ReservationDrawer() {
     return () => window.removeEventListener('keydown', onKey);
   }, [drawerOpen, closeDrawer]);
 
+  // Focus trap: mientras el drawer está abierto, Tab/Shift+Tab solo recorre
+  // sus propios elementos y no se "escapa" al contenido oculto detrás del overlay.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const container = asideRef.current;
+    if (!container) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const focusableEls = () => Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+    focusableEls()[0]?.focus();
+
+    function onKeydown(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      const items = focusableEls();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    container.addEventListener('keydown', onKeydown);
+    return () => {
+      container.removeEventListener('keydown', onKeydown);
+      previouslyFocused?.focus();
+    };
+  }, [drawerOpen]);
+
   if (HIDDEN_ON.includes(pathname)) return null;
 
   return (
@@ -46,6 +82,7 @@ export function ReservationDrawer() {
       />
 
       <aside
+        ref={asideRef}
         role="dialog"
         aria-modal="true"
         aria-label="Tu reserva"

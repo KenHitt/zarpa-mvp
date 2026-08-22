@@ -1,9 +1,18 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { LayoutChrome } from '@/components/layout-chrome';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { organizationSchema, websiteSchema } from '@/lib/seo/schemas';
-import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteTabTitle, siteTagline, siteUrl } from '@/lib/seo/site';
+import {
+  defaultDescription,
+  defaultKeywords,
+  defaultOgImage,
+  defaultOgImageSize,
+  siteName,
+  siteTabTitle,
+  siteTagline,
+  siteUrl,
+} from '@/lib/seo/site';
 
 const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
@@ -29,7 +38,7 @@ export const metadata: Metadata = {
     siteName,
     title: `${siteTagline} · ${siteName}`,
     description: defaultDescription,
-    images: [{ url: defaultOgImage, width: 1200, height: 630, alt: `${siteName} · ${siteTagline}` }],
+    images: [{ url: defaultOgImage, ...defaultOgImageSize, alt: `${siteName} · ${siteTagline}` }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -49,6 +58,11 @@ export const metadata: Metadata = {
     },
   },
   ...(googleVerification ? { verification: { google: googleVerification } } : {}),
+  manifest: '/manifest.webmanifest',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#1F4D3A',
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
