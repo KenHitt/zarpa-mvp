@@ -18,6 +18,14 @@ export function whatsappContactMessage() {
   return 'Hola Zarpa 👋 Tengo una consulta sobre tours en Tingo María.';
 }
 
+export function whatsappExperienceMessage(name: string, price: number | string) {
+  return `Hola Zarpa 👋 Me interesa el tour "${name}" (S/${price} por persona). ¿Tienen cupo disponible?`;
+}
+
+export function whatsappHotelMessage(name: string, pricePerNight: number | string) {
+  return `Hola Zarpa 👋 Me interesa el hospedaje "${name}" (S/${pricePerNight} por noche). ¿Tienen disponibilidad?`;
+}
+
 export function whatsappContactUrl() {
   return whatsappUrl(whatsappContactMessage());
 }
@@ -56,7 +64,8 @@ function formatPackageLines(state: PackageState, total: number) {
   if (state.experiences.length) {
     lines.push('🌿 Experiencias:');
     for (const item of state.experiences) {
-      lines.push(`• ${item.name} · ${fmtDate(item.date)} · S/${Number(item.price) * item.quantity}`);
+      const pax = item.quantity > 1 ? ` · ${item.quantity} personas` : '';
+      lines.push(`• ${item.name} · ${fmtDate(item.date)}${pax} · S/${Number(item.price) * item.quantity}`);
     }
   } else {
     lines.push('🌿 Sin experiencias');

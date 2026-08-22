@@ -1,5 +1,5 @@
 import type { Experience, Hotel, Review } from '@/lib/types';
-import { experiencePath, experienceSlug } from '@/lib/slug';
+import { experiencePath } from '@/lib/slug';
 import { businessInfo, defaultDescription, siteName, siteUrl, socialProfiles } from './site';
 
 export function organizationSchema() {
@@ -156,7 +156,25 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
-export function hotelSchema(hotel: Hotel) {
+export function hotelSchema(hotel: Hotel, reviews: Review[] = []) {
+  const aggregateRating = reviews.length
+    ? {
+        '@type': 'AggregateRating',
+        ratingValue: (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
+        reviewCount: reviews.length,
+        bestRating: 5,
+        worstRating: 1,
+      }
+    : undefined;
+
+  const review = reviews.slice(0, 15).map((r) => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.author_name },
+    datePublished: r.created_at.slice(0, 10),
+    reviewBody: r.comment,
+    reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+  }));
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Hotel',
@@ -166,6 +184,8 @@ export function hotelSchema(hotel: Hotel) {
     image: hotel.photos?.[0],
     priceRange: `S/${hotel.price_per_night}`,
     url: `${siteUrl()}/hoteles/${hotel.id}`,
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(review.length ? { review } : {}),
   };
 }
 
@@ -188,8 +208,4 @@ export function guideArticleSchema({
     publisher: { '@type': 'Organization', name: siteName, url: siteUrl() },
     mainEntityOfPage: `${siteUrl()}${path}`,
   };
-}
-
-export function allExperienceSlugsForSitemap(experiences: (Experience & { slug?: string | null })[]) {
-  return experiences.map((e) => experienceSlug(e));
 }

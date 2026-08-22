@@ -8,13 +8,17 @@ import { usePackage } from '@/components/package-provider';
 import { BookingSteps } from '@/components/booking-steps';
 import { TrustStrip } from '@/components/trust-strip';
 import { WhatsAppActions } from '@/components/whatsapp-actions';
+import { CANCELLATION_POLICY } from '@/lib/copy';
 
 export default function Checkout() {
   const p = usePackage();
   const router = useRouter();
-  const [method, setMethod] = useState('yape');
+  const [method, setMethod] = useState<'yape' | 'plin'>('yape');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+
+  const paymentNumber =
+    (method === 'yape' ? process.env.NEXT_PUBLIC_YAPE_NUMBER : process.env.NEXT_PUBLIC_PLIN_NUMBER) || '';
 
   useEffect(() => {
     if (p.hotel || p.experiences.length) {
@@ -74,10 +78,29 @@ export default function Checkout() {
       <BookingSteps current={3} />
       <p className="eyebrow mt-8">Paso 3 · Pagar</p>
       <h1 className="mt-2 font-display text-4xl text-forest">Completa tu reserva</h1>
-      <p className="mt-2 text-forest/70">
-        Total: <b className="text-forest">S/{p.total}</b>
-      </p>
-      <Link href="/mi-paquete" className="mt-2 inline-block text-sm font-semibold text-forest underline underline-offset-4">
+      <ul className="mt-5 space-y-2 rounded-2xl bg-white p-4 text-sm ring-1 ring-forest/10">
+        {p.experiences.map((x) => (
+          <li key={x.id} className="flex justify-between gap-3">
+            <span className="text-forest/80">
+              {x.name} · {x.quantity} {x.quantity === 1 ? 'persona' : 'personas'}
+            </span>
+            <b className="shrink-0 text-forest">S/{Number(x.price) * x.quantity}</b>
+          </li>
+        ))}
+        {p.hotel && (
+          <li className="flex justify-between gap-3">
+            <span className="text-forest/80">
+              {p.hotel.name} · {p.nights} {p.nights === 1 ? 'noche' : 'noches'}
+            </span>
+            <b className="shrink-0 text-forest">S/{Number(p.hotel.price_per_night) * p.nights}</b>
+          </li>
+        )}
+        <li className="flex justify-between gap-3 border-t border-forest/10 pt-2">
+          <span className="font-semibold text-forest">Total</span>
+          <b className="text-forest">S/{p.total}</b>
+        </li>
+      </ul>
+      <Link href="/mi-paquete" className="mt-3 inline-block text-sm font-semibold text-forest underline underline-offset-4">
         ← Volver a tu reserva
       </Link>
 
@@ -98,25 +121,39 @@ export default function Checkout() {
         </label>
         <fieldset>
           <legend className="mb-2 font-medium text-forest">Método de pago</legend>
-          {['yape', 'plin', 'card'].map((m) => (
-            <label className="mr-4 capitalize" key={m}>
-              <input type="radio" name="payment_method" value={m} checked={method === m} onChange={() => setMethod(m)} />{' '}
-              {m}
+          {(['yape', 'plin'] as const).map((m) => (
+            <label className="mr-4" key={m}>
+              <input
+                type="radio"
+                name="payment_method"
+                value={m}
+                checked={method === m}
+                onChange={() => setMethod(m)}
+              />{' '}
+              {m === 'yape' ? 'Yape' : 'Plin'}
             </label>
           ))}
         </fieldset>
-        {method !== 'card' && (
-          <div className="rounded-xl bg-white p-4 text-sm ring-1 ring-forest/10">
-            Paga a {method === 'yape' ? process.env.NEXT_PUBLIC_YAPE_NUMBER : process.env.NEXT_PUBLIC_PLIN_NUMBER}.
-            <label className="mt-3 block">
-              Comprobante de pago
-              <input required type="file" name="proof" accept="image/*" className="mt-1 block" />
-            </label>
-          </div>
-        )}
+        <div className="rounded-xl bg-white p-4 text-sm ring-1 ring-forest/10">
+          {paymentNumber ? (
+            <p className="text-forest/80">
+              Paga a <b className="text-forest">{paymentNumber}</b> ({method === 'yape' ? 'Yape' : 'Plin'}) y sube tu
+              comprobante.
+            </p>
+          ) : (
+            <p className="text-forest/80">
+              Escríbenos por WhatsApp y te pasamos el número de {method === 'yape' ? 'Yape' : 'Plin'} para pagar.
+            </p>
+          )}
+          <label className="mt-3 block">
+            Comprobante de pago
+            <input required type="file" name="proof" accept="image/*" className="mt-1 block" />
+          </label>
+        </div>
         {error && <p className="text-sm text-red-700">{error}</p>}
         <p className="text-xs leading-5 text-forest/50">
-          Al confirmar, tu cupo queda registrado. El operador validará tu pago y te contactará pronto.
+          Al confirmar, tu cupo queda registrado. El operador validará tu pago y te contactará pronto.{' '}
+          {CANCELLATION_POLICY}
         </p>
         <button disabled={sending} className="button w-full bg-amber text-forest hover:bg-amber/90">
           {sending ? 'Registrando…' : 'Confirmar y pagar'}

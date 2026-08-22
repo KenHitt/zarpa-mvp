@@ -10,8 +10,9 @@ type Context = PackageState & {
   closeDrawer: () => void;
   setHotel: (hotel: Hotel, inDate: string, outDate: string) => void;
   removeHotel: () => void;
-  addExperience: (x: Experience, date?: string) => void;
+  addExperience: (x: Experience, date?: string, quantity?: number) => void;
   setExperienceDate: (id: string, date: string) => void;
+  setExperienceQuantity: (id: string, quantity: number) => void;
   removeExperience: (id: string) => void;
   clear: () => void;
   nights: number;
@@ -20,6 +21,11 @@ type Context = PackageState & {
 
 const PackageContext = createContext<Context | null>(null);
 const empty: PackageState = { hotel: null, checkIn: '', checkOut: '', experiences: [] };
+
+// Tope alineado con la validación de /api/bookings.
+function clampQuantity(quantity: number) {
+  return Math.min(30, Math.max(1, Math.round(quantity) || 1));
+}
 
 export function PackageProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<PackageState>(empty);
@@ -44,7 +50,21 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
       window.history.replaceState({}, '', window.location.pathname);
     } else {
       const stored = localStorage.getItem('zarpa-package');
-      if (stored) setState(JSON.parse(stored));
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as PackageState;
+          if (parsed && Array.isArray(parsed.experiences)) {
+            setState({
+              hotel: parsed.hotel ?? null,
+              checkIn: parsed.checkIn ?? '',
+              checkOut: parsed.checkOut ?? '',
+              experiences: parsed.experiences,
+            });
+          }
+        } catch {
+          localStorage.removeItem('zarpa-package');
+        }
+      }
     }
 
     setReady(true);
@@ -73,7 +93,7 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
       setHotel: (hotel: Hotel, checkIn: string, checkOut: string) =>
         setState((s) => ({ ...s, hotel, checkIn, checkOut })),
       removeHotel: () => setState((s) => ({ ...s, hotel: null, checkIn: '', checkOut: '' })),
-      addExperience: (experience: Experience, date?: string) =>
+      addExperience: (experience: Experience, date?: string, quantity = 1) =>
         setState((s) =>
           s.experiences.some((x) => x.id === experience.id)
             ? s
@@ -84,7 +104,7 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
                   {
                     ...experience,
                     date: date || s.checkIn || new Date().toISOString().slice(0, 10),
-                    quantity: 1,
+                    quantity: clampQuantity(quantity),
                   },
                 ],
               }
@@ -93,6 +113,11 @@ export function PackageProvider({ children }: { children: React.ReactNode }) {
         setState((s) => ({
           ...s,
           experiences: s.experiences.map((x) => (x.id === id ? { ...x, date } : x)),
+        })),
+      setExperienceQuantity: (id: string, quantity: number) =>
+        setState((s) => ({
+          ...s,
+          experiences: s.experiences.map((x) => (x.id === id ? { ...x, quantity: clampQuantity(quantity) } : x)),
         })),
       removeExperience: (id: string) =>
         setState((s) => ({ ...s, experiences: s.experiences.filter((x) => x.id !== id) })),

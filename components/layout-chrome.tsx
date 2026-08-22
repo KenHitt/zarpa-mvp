@@ -9,6 +9,7 @@ import { TripBar } from './trip-bar';
 import { WhatsAppFloat } from './whatsapp-float';
 import { ReservationDrawer } from './reservation-drawer';
 import { AnalyticsPageView } from './analytics-page-view';
+import { GoogleAnalytics } from './analytics-ga';
 import { BrandLogo } from './brand-logo';
 
 export function LayoutChrome({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,7 @@ export function LayoutChrome({ children }: { children: React.ReactNode }) {
     <PackageProvider>
       <ToastProvider>
         <AnalyticsPageView />
+        <GoogleAnalytics />
         <Header />
         <main>{children}</main>
         <footer className="mt-16 border-t border-forest/10 px-4 py-8 pb-24 text-center text-sm text-forest/70">

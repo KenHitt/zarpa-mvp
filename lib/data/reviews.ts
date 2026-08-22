@@ -27,6 +27,28 @@ const cachedApprovedReviews = unstable_cache(
   { revalidate: 60, tags: ['reviews'] }
 );
 
+const cachedRecentReviews = unstable_cache(
+  async (limit: number): Promise<Review[]> => {
+    const db = reviewsDb();
+    if (!db) return [];
+    const { data, error } = await db
+      .from('reviews')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return data ?? [];
+  },
+  ['zarpa-recent-reviews-v1'],
+  { revalidate: 60, tags: ['reviews'] }
+);
+
+/** Últimas reseñas aprobadas de cualquier producto (para prueba social en la landing). */
+export function getRecentApprovedReviews(limit = 3) {
+  return cachedRecentReviews(limit);
+}
+
 export function getExperienceReviews(experienceId: string) {
   return cachedApprovedReviews('experience', experienceId);
 }

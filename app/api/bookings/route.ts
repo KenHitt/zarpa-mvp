@@ -35,6 +35,7 @@ export async function POST(request: Request) {
         !x.id ||
         !Number.isInteger(x.quantity) ||
         x.quantity < 1 ||
+        x.quantity > 30 ||
         !x.date ||
         (hasHotel &&
           payload.checkIn &&
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
       !name ||
       !phone ||
       !email ||
-      !['yape', 'plin', 'card'].includes(String(method)) ||
+      !['yape', 'plin'].includes(String(method)) ||
       (!hasHotel && !payload.experiences.length) ||
       (hasHotel && (expectedNights < 1 || payload.nights !== expectedNights)) ||
       (!hasHotel && payload.nights !== 0) ||
@@ -54,6 +55,9 @@ export async function POST(request: Request) {
     ) {
       throw Error('Completa los datos del viaje correctamente');
     }
+
+    const proof = form.get('proof');
+    if (!(proof instanceof File) || !proof.size) throw Error('Sube tu comprobante de pago');
 
     const db = createAdminClient();
 
@@ -126,7 +130,6 @@ export async function POST(request: Request) {
 
     if (bookError) throw bookError;
 
-    const proof = form.get('proof');
     if (proof instanceof File && proof.size) {
       if (proof.size > 5_000_000) throw Error('El comprobante no puede superar 5 MB');
       const ext = proof.name.split('.').pop() || 'jpg';

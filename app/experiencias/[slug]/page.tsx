@@ -8,11 +8,15 @@ import { FaqBlock } from '@/components/seo/faq-block';
 import { ReviewList } from '@/components/reviews/review-list';
 import { ReviewForm } from '@/components/reviews/review-form';
 import { ReviewStars } from '@/components/reviews/review-stars';
+import { StickyExperienceCta } from '@/components/sticky-experience-cta';
+import { WhatsAppProductButton } from '@/components/whatsapp-product-button';
 import { getExperienceBySlug, getExperiences } from '@/lib/data/catalog';
 import { getExperienceReviews, reviewStats } from '@/lib/data/reviews';
+import { CANCELLATION_POLICY } from '@/lib/copy';
 import { faqsForExperience, SEO_COPY_BY_SLUG } from '@/lib/seo/content';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { pageMetadata } from '@/lib/seo/metadata';
+import { whatsappExperienceMessage } from '@/lib/whatsapp';
 import {
   breadcrumbSchema,
   experienceProductSchema,
@@ -134,15 +138,25 @@ export default async function ExperienceDetailPage({ params }: Props) {
         </p>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl bg-cream/60 p-5 ring-1 ring-forest/10">
-        <div>
-          <p className="text-sm text-forest/60">Precio desde</p>
-          <p className="font-display text-3xl text-forest">S/{experience.price}</p>
+      <div className="mt-8 rounded-2xl bg-cream/60 p-5 ring-1 ring-forest/10">
+        <div className="flex flex-wrap items-center gap-4">
+          <div>
+            <p className="text-sm text-forest/60">Precio por persona</p>
+            <p className="font-display text-3xl text-forest">S/{experience.price}</p>
+          </div>
+          <AddExperience experience={experience} withQuantity />
+          <WhatsAppProductButton
+            message={whatsappExperienceMessage(experience.name, experience.price)}
+            productId={experience.id}
+          />
+          <Link href="/mi-paquete" className="text-sm font-semibold text-forest underline underline-offset-4">
+            Ver mi reserva →
+          </Link>
         </div>
-        <AddExperience experience={experience} />
-        <Link href="/mi-paquete" className="text-sm font-semibold text-forest underline underline-offset-4">
-          Ver mi reserva →
-        </Link>
+        <p className="mt-4 flex items-start gap-2 border-t border-forest/10 pt-4 text-sm text-forest/70">
+          <span aria-hidden className="text-forest">✓</span>
+          {CANCELLATION_POLICY}
+        </p>
       </div>
 
       <section className="mt-10 rounded-2xl border border-forest/10 bg-white p-5">
@@ -170,7 +184,7 @@ export default async function ExperienceDetailPage({ params }: Props) {
         </ul>
       </section>
 
-      <section className="mt-12">
+      <section id="resenas" className="mt-12 scroll-mt-24">
         <h2 className="font-display text-2xl text-forest">Reseñas de viajeros</h2>
         <ReviewList reviews={reviews} stats={stats} />
         <ReviewForm experienceId={experience.id} productName={experience.name} />
@@ -178,6 +192,7 @@ export default async function ExperienceDetailPage({ params }: Props) {
 
       <FaqBlock faqs={faqs} />
       <RelatedExperiences current={experience} all={all} />
+      <StickyExperienceCta experience={experience} />
 
       <JsonLd
         data={[

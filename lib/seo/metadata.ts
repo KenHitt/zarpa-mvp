@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteTagline, siteUrl } from './site';
+import { defaultDescription, defaultKeywords, defaultOgImage, siteName, siteUrl } from './site';
 
 type PageMeta = {
   title: string;
@@ -43,13 +43,4 @@ export function pageMetadata({
       images: ogImage ? [ogImage] : undefined,
     },
   };
-}
-
-export function homeMetadata(): Metadata {
-  return pageMetadata({
-    title: `${siteTagline} · Reserva cataratas, cuevas y tours`,
-    description: defaultDescription,
-    path: '/',
-    keywords: defaultKeywords,
-  });
 }

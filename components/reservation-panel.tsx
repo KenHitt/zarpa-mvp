@@ -81,7 +81,7 @@ export function ReservationPanel({ compact = false, onNavigate }: Props) {
                 <div className="flex justify-between gap-3">
                   <span className="font-medium text-forest">{x.name}</span>
                   <span className="shrink-0 text-forest">
-                    S/{x.price}{' '}
+                    S/{Number(x.price) * x.quantity}{' '}
                     <button
                       type="button"
                       className="ml-2 text-sm font-semibold text-red-700 underline underline-offset-2 hover:text-red-800"
@@ -91,17 +91,43 @@ export function ReservationPanel({ compact = false, onNavigate }: Props) {
                     </button>
                   </span>
                 </div>
-                <label className="mt-2 block text-sm">
-                  Fecha de experiencia
-                  <input
-                    className="input mt-1 max-w-xs"
-                    type="date"
-                    min={new Date().toISOString().slice(0, 10)}
-                    max={p.hotel ? p.checkOut : undefined}
-                    value={x.date}
-                    onChange={(e) => p.setExperienceDate(x.id, e.target.value)}
-                  />
-                </label>
+                <div className="mt-2 flex flex-wrap items-end gap-x-5 gap-y-3">
+                  <label className="block text-sm">
+                    Fecha de experiencia
+                    <input
+                      className="input mt-1 max-w-xs"
+                      type="date"
+                      min={new Date().toISOString().slice(0, 10)}
+                      max={p.hotel ? p.checkOut : undefined}
+                      value={x.date}
+                      onChange={(e) => p.setExperienceDate(x.id, e.target.value)}
+                    />
+                  </label>
+                  <div className="text-sm">
+                    <span className="block">Personas</span>
+                    <div className="mt-1 inline-flex items-center gap-1 rounded-xl border border-forest/15 bg-white px-1 py-0.5">
+                      <button
+                        type="button"
+                        aria-label="Quitar persona"
+                        disabled={x.quantity <= 1}
+                        onClick={() => p.setExperienceQuantity(x.id, x.quantity - 1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-lg font-bold text-forest transition hover:bg-cream disabled:opacity-40"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-6 text-center font-semibold text-forest">{x.quantity}</span>
+                      <button
+                        type="button"
+                        aria-label="Añadir persona"
+                        onClick={() => p.setExperienceQuantity(x.id, x.quantity + 1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-lg font-bold text-forest transition hover:bg-cream"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-1.5 text-xs text-forest/55">S/{x.price} por persona</p>
               </div>
             ))
           ) : (

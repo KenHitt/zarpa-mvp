@@ -59,7 +59,10 @@ export function ExperienceCard({ experience, priority = false }: { experience: E
         <p className="mt-3 truncate text-xs text-forest/55">Salida: {experience.meeting_point}</p>
         <p className="mt-2 text-xs text-forest/45">Reserva en minutos · cupos según disponibilidad</p>
         <div className="mt-5 flex items-center justify-between border-t border-forest/10 pt-4">
-          <b className="text-lg text-forest">S/{experience.price}</b>
+          <div>
+            <b className="text-lg text-forest">S/{experience.price}</b>
+            <small className="ml-1 text-forest/55">/ persona</small>
+          </div>
           <div className="flex items-center gap-2">
             <Link href={href} prefetch className="hidden text-sm font-semibold text-forest underline underline-offset-4 sm:inline">
               Ver tour

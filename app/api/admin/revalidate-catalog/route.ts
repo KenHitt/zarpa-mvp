@@ -17,6 +17,7 @@ export async function POST() {
   }
   revalidatePath('/experiencias', 'layout');
   revalidatePath('/experiencias/[slug]', 'page');
+  revalidatePath('/hoteles/[id]', 'page');
 
   return NextResponse.json({ ok: true });
 }

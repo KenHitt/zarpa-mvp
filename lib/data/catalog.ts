@@ -63,8 +63,3 @@ export async function getExperienceBySlug(rawSlug: string): Promise<Experience |
     experiences.find((item) => experienceSlug(item) === slug || item.slug === slug) ?? null
   );
 }
-
-export async function getAllExperienceSlugs(): Promise<string[]> {
-  const experiences = await getExperiences();
-  return experiences.map((item) => experienceSlug(item));
-}

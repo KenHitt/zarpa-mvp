@@ -1,8 +1,11 @@
+import { CANCELLATION_POLICY_SHORT } from '@/lib/copy';
+
 export function TrustStrip({ compact = false }: { compact?: boolean }) {
   const items = [
     'Operadores locales verificados',
-    'Pago Yape, Plin o tarjeta',
+    'Pago con Yape o Plin',
     'Confirmación en pocas horas',
+    CANCELLATION_POLICY_SHORT,
   ];
 
   return (

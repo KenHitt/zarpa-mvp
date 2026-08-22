@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { getExperiences, getHotels } from '@/lib/data/catalog';
+import { getRecentApprovedReviews } from '@/lib/data/reviews';
 import { ExperienceCard, HotelCard } from '@/components/catalog';
 import { FeaturedExperienceHero } from '@/components/featured-experience-hero';
 import { TrustStrip } from '@/components/trust-strip';
+import { ReviewStars } from '@/components/reviews/review-stars';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { siteTabTitle } from '@/lib/seo/site';
+import { whatsappContactUrl } from '@/lib/whatsapp';
 
 export const metadata = {
   ...pageMetadata({
@@ -18,10 +21,20 @@ export const metadata = {
 export const revalidate = 60;
 
 export default async function Home() {
-  const [hotels, experiences] = await Promise.all([getHotels(), getExperiences()]);
+  const [hotels, experiences, recentReviews] = await Promise.all([
+    getHotels(),
+    getExperiences(),
+    getRecentApprovedReviews(3),
+  ]);
   const featured = experiences.find((x) => x.name.toLowerCase().includes('derrepente')) || experiences[0];
   const minExperience = experiences.length ? Math.min(...experiences.map((e) => Number(e.price))) : 0;
   const minHotel = hotels.length ? Math.min(...hotels.map((h) => Number(h.price_per_night))) : 0;
+
+  const productName = new Map<string, string>();
+  experiences.forEach((e) => productName.set(e.id, e.name));
+  hotels.forEach((h) => productName.set(h.id, h.name));
+  const reviewProduct = (r: (typeof recentReviews)[number]) =>
+    (r.experience_id && productName.get(r.experience_id)) || (r.hotel_id && productName.get(r.hotel_id)) || null;
 
   return (
     <>
@@ -34,7 +47,7 @@ export default async function Home() {
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-forest/70">
               Catarata Derrepente, ríos, cuevas y tours locales con operadores de
-              Tingo María. Sin filas — eliges, pagas y listo.
+              Tingo María. Sin filas: eliges, pagas con Yape o Plin y recibes tu confirmación.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/experiencias" className="button" prefetch>
@@ -105,6 +118,19 @@ export default async function Home() {
             <ExperienceCard key={e.id} experience={e} priority={i === 0} />
           ))}
         </div>
+        {experiences.length === 0 && (
+          <p className="mt-10 rounded-2xl border border-dashed border-forest/20 p-6 text-center text-forest/60">
+            Estamos preparando nuevas experiencias.{' '}
+            <a
+              href={whatsappContactUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-forest underline underline-offset-4"
+            >
+              Consulta por WhatsApp
+            </a>
+          </p>
+        )}
         <Link className="button mt-7 w-full sm:hidden" href="/experiencias">
           Ver todas las experiencias
         </Link>
@@ -125,10 +151,35 @@ export default async function Home() {
           <div>
             <p className="eyebrow">03</p>
             <h3 className="mt-3 font-display text-2xl text-forest">Paga</h3>
-            <p className="mt-2 text-sm leading-6 text-forest/65">Yape, Plin o tarjeta. El operador confirma al toque.</p>
+            <p className="mt-2 text-sm leading-6 text-forest/65">
+              Con Yape o Plin, subiendo tu comprobante. El operador confirma al toque.
+            </p>
           </div>
         </div>
       </section>
+
+      {recentReviews.length > 0 && (
+        <section className="border-b border-forest/10">
+          <div className="shell py-16 sm:py-20">
+            <p className="eyebrow">Viajeros reales</p>
+            <h2 className="section-title">Lo que dicen quienes ya viajaron.</h2>
+            <div className="mt-10 grid gap-5 sm:grid-cols-3">
+              {recentReviews.map((r) => (
+                <figure key={r.id} className="rounded-2xl border border-forest/10 bg-white p-5">
+                  <ReviewStars value={r.rating} size="sm" />
+                  <blockquote className="mt-3 text-sm leading-6 text-forest/80">“{r.comment}”</blockquote>
+                  <figcaption className="mt-4 text-xs font-semibold text-forest">
+                    {r.author_name}
+                    {reviewProduct(r) && (
+                      <span className="mt-0.5 block font-normal text-forest/55">{reviewProduct(r)}</span>
+                    )}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="border-b border-forest/10 bg-white">
         <div className="shell py-16 sm:py-20">
@@ -147,6 +198,14 @@ export default async function Home() {
               <HotelCard key={h.id} hotel={h} />
             ))}
           </div>
+          {hotels.length === 0 && (
+            <p className="mt-10 rounded-2xl border border-dashed border-forest/20 p-6 text-center text-forest/60">
+              Pronto publicaremos hospedajes aliados en Tingo María.
+            </p>
+          )}
+          <Link className="button mt-7 w-full sm:hidden" href="/hoteles">
+            Ver todos los hoteles
+          </Link>
         </div>
       </section>
       <section className="border-b border-forest/10 bg-cream/30">
@@ -166,6 +225,31 @@ export default async function Home() {
               <h3 className="font-display text-xl text-forest">Jurassic Park peruano</h3>
               <p className="mt-2 text-sm text-forest/65">Bosque de Piedras y formaciones rocosas.</p>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-forest text-cream">
+        <div className="shell flex flex-col items-center py-16 text-center sm:py-20">
+          <p className="eyebrow">Reserva hoy</p>
+          <h2 className="mt-3 max-w-xl font-display text-3xl leading-[1.05] tracking-tight sm:text-5xl">
+            ¿Listo para conocer Tingo María?
+          </h2>
+          <p className="mt-4 max-w-md text-sm leading-6 text-cream/75">
+            Elige tu experiencia, paga con Yape o Plin y recibe confirmación en pocas horas.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/experiencias" className="button bg-amber text-forest hover:bg-amber/90">
+              Reservar una experiencia
+            </Link>
+            <a
+              href={whatsappContactUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center rounded-full border border-cream/30 px-5 text-sm font-semibold text-cream transition hover:border-cream"
+            >
+              Consultar por WhatsApp
+            </a>
           </div>
         </div>
       </section>
